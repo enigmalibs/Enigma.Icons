@@ -8,8 +8,9 @@ Agent instructions for the `Enigma.Icons` solution.
 # Build the whole solution
 dotnet build Enigma.Icons.slnx
 
-# Run the whole test suite
-dotnet test Enigma.Icons.slnx
+# Run the whole test suite (a solution path must be passed via --solution on the .NET 10 SDK;
+# a bare `dotnet test` from the repo root works too)
+dotnet test --solution Enigma.Icons.slnx
 
 # Pack one package (Release)
 dotnet pack src/<Project>/<Project>.csproj -c Release

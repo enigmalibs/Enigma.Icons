@@ -1,6 +1,10 @@
 <Solution>
-  <Folder Name="/src/" />
-  <Folder Name="/tests/" />
+  <Folder Name="/src/">
+    <Project Path="src/Enigma.Icons/Enigma.Icons.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Enigma.Icons.UnitTests/Enigma.Icons.UnitTests.csproj" />
+  </Folder>
   <Folder Name="/samples/" />
   <Folder Name="/tools/" />
 </Solution>

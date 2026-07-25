@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Shared settings (LangVersion, Nullable, TreatWarningsAsErrors, EnforceCodeStyleInBuild,
+       Authors, Copyright) are inherited from Directory.Build.props — SPEC §3.2. -->
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFrameworks>netstandard2.0;net8.0;net10.0</TargetFrameworks>
+    <ImplicitUsings>disable</ImplicitUsings>
+
+    <PackageId>Enigma.Icons</PackageId>
+    <Title>Enigma.Icons — icon model, SVG parser and icon-set abstraction</Title>
+    <Version>1.0.0</Version>
+    <Description>Framework-agnostic icon model, hardened SVG icon parser and icon-set abstraction for .NET. Bring your own folder of .svg files, or plug in an icon pack such as Enigma.Icons.Phosphor. Zero dependencies.</Description>
+    <PackageTags>enigma icons icon svg vector geometry icon-set parser dotnet netstandard zero-dependencies open-source</PackageTags>
+
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/josueclement/Enigma.Icons</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/josueclement/Enigma.Icons</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!-- SPEC §10.4: trim/AOT annotations only on the modern TFMs — netstandard2.0 supports neither. -->
+  <PropertyGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
+    <IsTrimmable>true</IsTrimmable>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\LICENSE.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <!-- Lets the unit tests exercise the Enigma.Icons.Internal helpers directly. Adds nothing to
+       the public API. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="Enigma.Icons.UnitTests" />
+  </ItemGroup>
+
+  <!-- SPEC §2.10: this project has ZERO PackageReference entries, on every TFM. That is a hard
+       constraint, not a preference — everything it needs (System.Xml.ReaderWriter,
+       System.Collections.Concurrent, System.IO, System.Globalization) is inside the
+       netstandard2.0 reference set. If a compile error under netstandard2.0 ever seems to demand a
+       polyfill, rewrite the code first; adding a package requires a justification here (SPEC §3.3). -->
+
+</Project>
