@@ -1,9 +1,11 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/Enigma.Icons/Enigma.Icons.csproj" />
+    <Project Path="src/Enigma.Icons.Phosphor/Enigma.Icons.Phosphor.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Enigma.Icons.UnitTests/Enigma.Icons.UnitTests.csproj" />
+    <Project Path="tests/Enigma.Icons.Phosphor.UnitTests/Enigma.Icons.Phosphor.UnitTests.csproj" />
   </Folder>
   <Folder Name="/samples/" />
   <Folder Name="/tools/">
