@@ -6,5 +6,7 @@
     <Project Path="tests/Enigma.Icons.UnitTests/Enigma.Icons.UnitTests.csproj" />
   </Folder>
   <Folder Name="/samples/" />
-  <Folder Name="/tools/" />
+  <Folder Name="/tools/">
+    <Project Path="tools/Enigma.Icons.Generator/Enigma.Icons.Generator.csproj" />
+  </Folder>
 </Solution>

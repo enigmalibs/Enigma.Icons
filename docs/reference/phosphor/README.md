@@ -81,5 +81,10 @@ tar --sort=name --owner=0 --group=0 --numeric-owner --mtime=@1735689600 \
 2. Rebuild the archive with the command above, named `phosphor-<newversion>-svgs-flat.tar.gz`.
 3. Delete the old archive, update this file (version, sha256, size, file count).
 4. Re-run the generator (SPEC §8) — `git diff` on `src/Enigma.Icons.Phosphor/` then shows exactly
-   which icons changed and which were added.
+   which icons changed and which were added. Then run it once more with `--check`: it must exit 0,
+   which is what proves the committed bytes are what the generator actually produces.
 5. Confirm the full-corpus integrity tests still pass (SPEC §12).
+6. **Treat the refresh as at least a MINOR version bump** for `Enigma.Icons.Phosphor`. `PhosphorIcon`
+   members are numbered by position in the ordinal-sorted name list, so adding or removing a single
+   icon renumbers every member after it (SPEC §8.4). The names are the contract; the ordinals are
+   not.

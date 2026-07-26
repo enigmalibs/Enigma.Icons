@@ -11,7 +11,7 @@ Row order is the intended build order — `/build` surfaces the topmost `TODO` f
 |--------------|------------------------------------------------------------------------------|--------|---------------------------|
 | FEATURE-21C4 | Solution scaffolding & shared config (git init main, slnx, props, root docs)  | DONE   | docs/plan/FEATURE-21C4.md |
 | FEATURE-24DD | Enigma.Icons base library (model, SVG parser, IIconSet, SvgIconSet) + UnitTests | DONE   | docs/plan/FEATURE-24DD.md |
-| FEATURE-2DDE | Asset generator tool + generated Phosphor resources and enum                  | TODO   | docs/plan/FEATURE-2DDE.md |
+| FEATURE-2DDE | Asset generator tool + generated Phosphor resources and enum                  | DONE   | docs/plan/FEATURE-2DDE.md |
 | FEATURE-3950 | Enigma.Icons.Phosphor package + UnitTests (full-corpus integrity)             | TODO   | docs/plan/FEATURE-3950.md |
 | FEATURE-3ADD | Enigma.Icons.Avalonia (extensions, markup extensions, Icon control) + UnitTests | TODO | docs/plan/FEATURE-3ADD.md |
 | FEATURE-469B | Icon gallery sample app                                                      | TODO   | docs/plan/FEATURE-469B.md |

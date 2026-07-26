@@ -1,4 +1,4 @@
-**Status:** TODO · Single-phase · Suggested build branch `feature/feature-2dde-asset-generator`
+**Status:** DONE · Single-phase · Suggested build branch `feature/feature-2dde-asset-generator`
 
 # FEATURE-2DDE — Asset generator tool + generated Phosphor resources and enum
 
@@ -340,79 +340,79 @@ on the tool's own committed output three times including from a fresh extraction
 ground-truth assertions below, run against the committed bytes, and **(d)** the temp-project compile
 probe of the generated C# (Design step 9).
 
-- [ ] `tools/Enigma.Icons.Generator/Enigma.Icons.Generator.csproj` exists: `net10.0`, `OutputType Exe`,
+- [x] `tools/Enigma.Icons.Generator/Enigma.Icons.Generator.csproj` exists: `net10.0`, `OutputType Exe`,
       `IsPackable false`, `ImplicitUsings disable`, **no** `PackageReference`, **no** `ProjectReference`.
-- [ ] Slnx contains exactly one new entry — `tools/Enigma.Icons.Generator` under `/tools/` — and no
+- [x] Slnx contains exactly one new entry — `tools/Enigma.Icons.Generator` under `/tools/` — and no
       `src/Enigma.Icons.Phosphor` or `tests/Enigma.Icons.Phosphor.UnitTests` entry (SPEC §3.4).
-- [ ] **`dotnet build Enigma.Icons.slnx` succeeds with zero warnings** (`TreatWarningsAsErrors`,
+- [x] **`dotnet build Enigma.Icons.slnx` succeeds with zero warnings** (`TreatWarningsAsErrors`,
       SPEC §2.1); capture the output as build evidence.
-- [ ] Archive sha256 verified against `docs/reference/phosphor/README.md` before extraction;
+- [x] Archive sha256 verified against `docs/reference/phosphor/README.md` before extraction;
       extraction target is a temp directory and `git status` shows **no** `.svg` files anywhere in
       the working tree.
-- [ ] Six files `src/Enigma.Icons.Phosphor/Assets/phosphor.{thin,light,regular,bold,fill,duotone}.dat`
+- [x] Six files `src/Enigma.Icons.Phosphor/Assets/phosphor.{thin,light,regular,bold,fill,duotone}.dat`
       exist, each: UTF-8 **without BOM** (first bytes are not `EF BB BF`), LF only (no `0D` bytes),
       final newline, 1,513 lines (header + 1,512 icons).
-- [ ] Every header is `v1<TAB><weight><TAB>0 0 256 256<TAB>1512` with the correct weight name, and
+- [x] Every header is `v1<TAB><weight><TAB>0 0 256 256<TAB>1512` with the correct weight name, and
       the declared count equals the actual icon-line count (SPEC §7.2).
-- [ ] **9,072 pairs:** each `.dat` holds 1,512 icon lines; the six name columns are **byte-identical
+- [x] **9,072 pairs:** each `.dat` holds 1,512 icon lines; the six name columns are **byte-identical
       across all six weights** (e.g. `cut -f1` on each, all six diffs empty) — SPEC §7.4.6. Names are
       ordinal-sorted, unique within a weight, and all match `^[a-z-]+$`.
-- [ ] **thin, light, regular, bold:** every icon line has exactly 2 fields (name + 1 layer) and no
+- [x] **thin, light, regular, bold:** every icon line has exactly 2 fields (name + 1 layer) and no
       `@` opacity prefix anywhere in those four files (SPEC §7.4.8).
-- [ ] **fill outliers, exact:** exactly these 8 icons have more than one layer field, with these
+- [x] **fill outliers, exact:** exactly these 8 icons have more than one layer field, with these
       counts — `bookmarks-simple` 2, `crane-tower` 2, `hard-drives` 2, `lasso` 2, `music-notes-minus`
       3, `speaker-simple-x` 2, `stack` 3, `stack-simple` 2 — every other fill icon has exactly 1, and
       no fill layer carries an `@` prefix (SPEC §7.4.8).
-- [ ] **duotone outliers, exact:** 1,510 icons have exactly 2 layers with the first prefixed `@0.2:`;
+- [x] **duotone outliers, exact:** 1,510 icons have exactly 2 layers with the first prefixed `@0.2:`;
       exactly `cell-signal-none` and `wifi-none` have 1 layer with **no** prefix (SPEC §7.4.8).
-- [ ] Total layer fields across the six files = **10,592** (SPEC §7.4.9).
-- [ ] The two SPEC §7.4.4 files lacking the root `fill` attribute did **not** break generation:
+- [x] Total layer fields across the six files = **10,592** (SPEC §7.4.9).
+- [x] The two SPEC §7.4.4 files lacking the root `fill` attribute did **not** break generation:
       `cricket` and `signature` are present in `phosphor.duotone.dat` with 2 layers each.
-- [ ] Every source file's `viewBox` was asserted to be `0 0 256 256` (SPEC §7.4.3) — the generator
+- [x] Every source file's `viewBox` was asserted to be `0 0 256 256` (SPEC §7.4.3) — the generator
       read it rather than hard-coding it, and all six headers carry it.
-- [ ] Path data is verbatim: spot-check ≥ 3 icons across ≥ 3 weights (including one duotone and one
+- [x] Path data is verbatim: spot-check ≥ 3 icons across ≥ 3 weights (including one duotone and one
       multi-layer fill) by comparing each `.dat` field byte-for-byte with the `d` attribute of the
       corresponding extracted `.svg`.
-- [ ] Per-weight **whole-file** byte sizes match SPEC §7.3's measured targets within **±2 %** — thin
+- [x] Per-weight **whole-file** byte sizes match SPEC §7.3's measured targets within **±2 %** — thin
       678,696 B, light 678,649 B, regular 632,699 B, bold 629,731 B, fill 553,221 B, duotone
       778,298 B, total **3,951,294 B (3.77 MiB)**. These are whole-file figures (header line, icon
       names, TABs, `@0.2:` prefixes and newlines all included) — **not** the §7.3 path-data
       subtotals, which are ~3–4 % smaller and are not the target. A deviation beyond ±2 % on any
       weight means the format or the data is wrong — investigate, do not accept.
-- [ ] `git check-attr text eol -- src/Enigma.Icons.Phosphor/Assets/phosphor.thin.dat` shows the file
+- [x] `git check-attr text eol -- src/Enigma.Icons.Phosphor/Assets/phosphor.thin.dat` shows the file
       as **text** with `eol=lf`, so future artwork refreshes diff line-by-line (SPEC §3.6).
-- [ ] `PhosphorIcon.g.cs`: `// <auto-generated/>` first line, `#nullable enable`, no `using`
+- [x] `PhosphorIcon.g.cs`: `// <auto-generated/>` first line, `#nullable enable`, no `using`
       directives, `namespace Enigma.Icons.Phosphor;`, exactly **1,512** members in `.dat` order,
       PascalCase, **no explicit numeric values** (no `= N` anywhere — SPEC §8.4), and **exactly 1,512
       member-level `<summary>` lines** — one per member (SPEC §8.4, §2.8).
-- [ ] The `PhosphorIcon` type-level doc carries the SPEC §8.4 ordinal-instability caveat — numeric
+- [x] The `PhosphorIcon` type-level doc carries the SPEC §8.4 ordinal-instability caveat — numeric
       values are positional and shift on an artwork refresh; persist `PhosphorIconNames.ToKebabCase`
       and read back with `TryParse`.
-- [ ] `PhosphorIconNames.g.cs`: the SPEC §8.4 public surface (`ToKebabCase`, `TryParse`, `All`) with
+- [x] `PhosphorIconNames.g.cs`: the SPEC §8.4 public surface (`ToKebabCase`, `TryParse`, `All`) with
       XML docs on the class and all three members; `Names` holds 1,512 entries one per line in enum
       order; the lookup dictionary uses `StringComparer.OrdinalIgnoreCase`; **no `Enum.ToString`,
       `Enum.Parse`, `Enum.IsDefined`, or reflection appears in either generated file** (SPEC §2.11).
-- [ ] **Generated C# compiles clean:** the temp-directory probe project (Design step 9) builds both
+- [x] **Generated C# compiles clean:** the temp-directory probe project (Design step 9) builds both
       `.g.cs` files with `GenerateDocumentationFile=true` and `TreatWarningsAsErrors=true` at zero
       warnings — i.e. CS1591 is satisfied on all 1,512 members — and the temp directory is deleted
       afterwards. Nothing was added to the repo or the slnx.
-- [ ] **Reproducibility:** `--check` exits 0 (a) immediately after generation, (b) on an immediate
+- [x] **Reproducibility:** `--check` exits 0 (a) immediately after generation, (b) on an immediate
       second run, and (c) after re-extracting the archive into a differently-named temp directory.
       All three exit codes recorded.
-- [ ] `--check` is proven non-destructive: run it against a deliberately absent/modified copy of one
+- [x] `--check` is proven non-destructive: run it against a deliberately absent/modified copy of one
       `.dat` **outside** the repo (or on a scratch copy of the output tree) and confirm it exits
       non-zero, reports the offending file, and writes nothing; the repo copy is untouched.
-- [ ] Usage/diagnostic behaviour: missing `--input`, missing `--output`, an unknown argument, and a
+- [x] Usage/diagnostic behaviour: missing `--input`, missing `--output`, an unknown argument, and a
       non-existent `--input` directory each exit non-zero with a readable message on `stderr` and no
       unhandled exception.
-- [ ] `src/Enigma.Icons.Phosphor/` contains **only** the 2 `.g.cs` files and `Assets/` with the 6
+- [x] `src/Enigma.Icons.Phosphor/` contains **only** the 2 `.g.cs` files and `Assets/` with the 6
       `.dat` files — **no csproj** (FEATURE-3950 owns it, SPEC §16.2).
-- [ ] `THIRD-PARTY-NOTICES.md` present with the verbatim Phosphor MIT text (SPEC §14.2), now that
+- [x] `THIRD-PARTY-NOTICES.md` present with the verbatim Phosphor MIT text (SPEC §14.2), now that
       the artwork is committed.
-- [ ] Every generated and hand-written text file is LF with a final newline (SPEC §2.7).
-- [ ] **Roadmap + this plan flipped to `DONE`** (`docs/roadmap.md` FEATURE-2DDE row; this file's
+- [x] Every generated and hand-written text file is LF with a final newline (SPEC §2.7).
+- [x] **Roadmap + this plan flipped to `DONE`** (`docs/roadmap.md` FEATURE-2DDE row; this file's
       status header). (DoD criterion 4.)
-- [ ] **Completion doc `docs/done/FEATURE-2DDE.md` written** — summary, files touched, deviations,
+- [x] **Completion doc `docs/done/FEATURE-2DDE.md` written** — summary, files touched, deviations,
       build/`--check` evidence including the generator's stdout summary and the three `--check` exit
       codes. (DoD criterion 5.)
 

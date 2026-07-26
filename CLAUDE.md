@@ -30,13 +30,27 @@ dotnet run --project tools/Enigma.Icons.Generator -- \
 
 Add `--check` to the generator invocation for a staleness gate: it regenerates into memory, writes
 nothing, and exits non-zero if the committed assets differ from what it would produce (SPEC §8.5).
+Never extract the snapshot inside the working tree — `.gitignore` has no rule for it, so 9,072 stray
+`.svg` files would land in the next commit.
+
+The generator's exit codes are the failure surface — never treat non-zero as "just rerun it":
+
+| Code | Meaning |
+|---|---|
+| 0 | success (a non-fatal `warning:` block on stderr still exits 0) |
+| 1 | usage error — unknown/repeated/missing argument; usage is printed to stderr |
+| 2 | input or validation failure — missing weight directory, cross-weight name-set mismatch, zero paths, empty `d`, a `viewBox` that is absent, malformed or inconsistent within a weight, or an out-of-range `opacity` |
+| 3 | `--check` found a difference; the per-file report names each artifact and the first differing offset |
 
 The test runner is Microsoft.Testing.Platform, selected by `global.json` (SPEC §3.1) — there is no
 `Microsoft.NET.Test.Sdk` or VSTest in this solution.
 
-> The solution is being built incrementally. Until the owning work item has run, some of these
-> commands have nothing to act on — `dotnet build` on a project-less solution succeeds and does
-> nothing, and `dotnet test` finds no tests.
+> The solution is being built incrementally, so not every path above exists yet. As of
+> FEATURE-2DDE, `src/Enigma.Icons`, `tests/Enigma.Icons.UnitTests` and
+> `tools/Enigma.Icons.Generator` are real; `src/Enigma.Icons.Phosphor` holds only the generator's
+> committed output and gets its csproj in FEATURE-3950; `src/Enigma.Icons.Avalonia` and
+> `samples/Enigma.Icons.Avalonia.Gallery` do not exist yet. `dotnet pack` therefore only applies to
+> the packages that have been built.
 
 ## Architecture
 
