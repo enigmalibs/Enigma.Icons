@@ -45,13 +45,18 @@ The generator's exit codes are the failure surface — never treat non-zero as "
 The test runner is Microsoft.Testing.Platform, selected by `global.json` (SPEC §3.1) — there is no
 `Microsoft.NET.Test.Sdk` or VSTest in this solution.
 
-> The solution is being built incrementally, so not every path above exists yet. As of
-> FEATURE-3ADD the slnx holds seven of the eight end-state projects (SPEC §3.4) —
-> `src/Enigma.Icons`, `src/Enigma.Icons.Phosphor`, `src/Enigma.Icons.Avalonia`,
-> `tests/Enigma.Icons.UnitTests`, `tests/Enigma.Icons.Phosphor.UnitTests`,
-> `tests/Enigma.Icons.Avalonia.UnitTests` and `tools/Enigma.Icons.Generator`. Only
-> `samples/Enigma.Icons.Avalonia.Gallery` is still missing, so `dotnet pack` applies to all three
-> packable projects: `Enigma.Icons`, `Enigma.Icons.Phosphor` and `Enigma.Icons.Avalonia`.
+> As of FEATURE-469B the slnx holds **all eight** end-state projects (SPEC §3.4) — every path above
+> exists. `dotnet pack` applies to the three packable ones: `Enigma.Icons`, `Enigma.Icons.Phosphor`
+> and `Enigma.Icons.Avalonia`. The two remaining 1.0.0 items add no projects: FEATURE-718F writes the
+> READMEs, FEATURE-74DC prepares the release.
+
+Run the gallery — the sample app, and the only way to verify rendering by eye:
+
+```bash
+dotnet run --project samples/Enigma.Icons.Avalonia.Gallery
+```
+
+It needs a real desktop session (`DISPLAY`/`WAYLAND_DISPLAY`); a headless shell cannot show its window.
 
 ## Architecture
 
@@ -72,7 +77,7 @@ Neither is packable, and neither is referenced by any packable project.
 
 ## Hard rules (SPEC §2)
 
-1. **Zero-warning builds.** `TreatWarningsAsErrors` and `EnforceCodeStyleInBuild` are on solution-wide — a warning is a build failure.
+1. **Zero-warning builds.** `TreatWarningsAsErrors` and `EnforceCodeStyleInBuild` are on solution-wide — a warning is a build failure. **Exception to watch:** Avalonia's XAML compiler logs its `AVLN*` diagnostics from an MSBuild task, and `TreatWarningsAsErrors` does **not** promote those — the build reports `Build succeeded` with warnings. Read the warning count on any project that compiles `.axaml`; do not trust the exit code alone.
 2. **`ImplicitUsings` is `disable`** in every csproj; every file declares its own `using` directives.
 3. **`Nullable` enable** everywhere; no `!` without a commented justification.
 4. **`LangVersion 14`.**

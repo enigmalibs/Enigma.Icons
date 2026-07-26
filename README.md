@@ -51,7 +51,7 @@ XAML:
 xmlns:ei="https://github.com/josueclement/Enigma.Icons"
 
 <ei:Icon Kind="Acorn" Weight="Duotone" Size="24"
-         Foreground="{DynamicResource SystemAccentColorBrush}" />
+         Foreground="{DynamicResource SystemControlForegroundAccentBrush}" />
 ```
 
 C#:

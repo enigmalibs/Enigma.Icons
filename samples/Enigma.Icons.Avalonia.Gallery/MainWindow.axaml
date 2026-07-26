@@ -1,0 +1,321 @@
+<!-- ONE icons namespace declaration reaches the control AND both markup extensions: the two
+     XmlnsDefinition attributes in Enigma.Icons.Avalonia map Enigma.Icons.Avalonia and
+     Enigma.Icons.Avalonia.Markup onto this single URI (SPEC §10.3). This window compiling is the
+     proof — ei:Icon, {ei:IconGeometry} and {ei:IconImage} are all used below under `ei` alone. -->
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ei="https://github.com/josueclement/Enigma.Icons"
+        xmlns:vm="using:Enigma.Icons.Avalonia.Gallery"
+        x:Class="Enigma.Icons.Avalonia.Gallery.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Enigma.Icons — Phosphor Gallery"
+        Width="1220"
+        Height="780">
+
+  <Window.Styles>
+    <!-- Chrome-less grid cells: focusable (so the grid is keyboard-reachable, SPEC §15) but with
+         no button chrome competing with the artwork. -->
+    <Style Selector="Button.cell">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="4,8" />
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <Style Selector="Button.cell:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundListLowBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.section">
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Opacity" Value="0.7" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="TextBlock.caption">
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="Opacity" Value="0.65" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="Border.panel">
+      <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+      <Setter Property="BorderThickness" Value="0,0,0,1" />
+      <Setter Property="Padding" Value="12,10" />
+    </Style>
+  </Window.Styles>
+
+  <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+
+    <!-- ══ Row 0 — the controls ══════════════════════════════════════════════════════════════ -->
+    <Border Grid.Row="0" Classes="panel">
+      <WrapPanel Orientation="Horizontal" ItemSpacing="16" LineSpacing="8">
+
+        <TextBox x:Name="SearchBox"
+                 Width="260"
+                 VerticalAlignment="Center"
+                 PlaceholderText="Search 1,512 icons…"
+                 Text="{Binding SearchText}" />
+
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <TextBlock Classes="section" Text="Weight" />
+          <!-- A horizontal ListBox rather than a ComboBox: all six weights visible, one click apart. -->
+          <ListBox ItemsSource="{Binding Weights}"
+                   SelectedItem="{Binding SelectedWeight}"
+                   VerticalAlignment="Center"
+                   Padding="0"
+                   Background="Transparent"
+                   BorderThickness="0">
+            <ListBox.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" />
+              </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+          </ListBox>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <TextBlock Classes="section" Text="Size" />
+          <Slider Width="150"
+                  Minimum="12"
+                  Maximum="96"
+                  TickFrequency="1"
+                  IsSnapToTickEnabled="True"
+                  VerticalAlignment="Center"
+                  Value="{Binding IconSize}" />
+          <TextBlock Classes="section" Text="{Binding IconSize, StringFormat='{}{0:0} px'}" />
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <TextBlock Classes="section" Text="Colour" />
+          <!-- A preset set, not a colour picker: Avalonia.Controls.ColorPicker has no central pin in
+               SPEC §3.3, and §11 offers "picker or a small preset set". -->
+          <ComboBox Width="130"
+                    VerticalAlignment="Center"
+                    ItemsSource="{Binding ColorPresets}"
+                    SelectedItem="{Binding SelectedColor}">
+            <ComboBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:ColorPreset">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <Border Width="14"
+                          Height="14"
+                          CornerRadius="3"
+                          VerticalAlignment="Center"
+                          Background="{Binding Brush}"
+                          BorderThickness="1"
+                          BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}" />
+                  <TextBlock Text="{Binding Name}" />
+                </StackPanel>
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+        </StackPanel>
+
+      </WrapPanel>
+    </Border>
+
+    <!-- ══ Row 1 — the six weights, and the inherited-Foreground proof ═══════════════════════ -->
+    <Border Grid.Row="1" Classes="panel">
+      <WrapPanel Orientation="Horizontal" ItemSpacing="28" LineSpacing="8">
+
+        <StackPanel Orientation="Horizontal" Spacing="18" VerticalAlignment="Center">
+          <TextBlock Classes="section" Text="All six weights" />
+
+          <StackPanel Spacing="2">
+            <ei:Icon Kind="Heart" Weight="Thin" Size="40" Foreground="{Binding SelectedColor.Brush}" />
+            <TextBlock Classes="caption" Text="Thin" />
+          </StackPanel>
+          <StackPanel Spacing="2">
+            <ei:Icon Kind="Heart" Weight="Light" Size="40" Foreground="{Binding SelectedColor.Brush}" />
+            <TextBlock Classes="caption" Text="Light" />
+          </StackPanel>
+          <StackPanel Spacing="2">
+            <ei:Icon Kind="Heart" Weight="Regular" Size="40" Foreground="{Binding SelectedColor.Brush}" />
+            <TextBlock Classes="caption" Text="Regular" />
+          </StackPanel>
+          <StackPanel Spacing="2">
+            <ei:Icon Kind="Heart" Weight="Bold" Size="40" Foreground="{Binding SelectedColor.Brush}" />
+            <TextBlock Classes="caption" Text="Bold" />
+          </StackPanel>
+          <StackPanel Spacing="2">
+            <ei:Icon Kind="Heart" Weight="Fill" Size="40" Foreground="{Binding SelectedColor.Brush}" />
+            <TextBlock Classes="caption" Text="Fill" />
+          </StackPanel>
+          <StackPanel Spacing="2">
+            <!-- Duotone is the two-layer weight: a 20 %-opacity backing shape behind the foreground
+                 shape (SPEC §7.4). Both layers paint with the SAME brush — seeing two tones here is
+                 the proof that the layered glyph model reaches the screen. -->
+            <ei:Icon Kind="Heart" Weight="Duotone" Size="40" Foreground="{Binding SelectedColor.Brush}" />
+            <TextBlock Classes="caption" Text="Duotone" />
+          </StackPanel>
+        </StackPanel>
+
+        <!-- Neither icon below sets Foreground. Both must render, in their enclosing scope's brush,
+             and both must repaint on a theme switch — SPEC §10.2's TextElement.Foreground AddOwner
+             inheritance, which is exactly what a markup extension cannot do. -->
+        <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+          <TextBlock Classes="section" Text="Inherited Foreground" />
+
+          <Button VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <ei:Icon Kind="Star" Size="20" VerticalAlignment="Center" />
+              <TextBlock Text="Button scope" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+
+          <!-- An explicit scope brush that is NOT the ambient default, so this proves inheritance
+               rather than merely the property's default value — and it is a theme resource, so it
+               moves with the theme variant too. The TextBlock beside the icon shares the scope:
+               they must always be the same colour. -->
+          <StackPanel Orientation="Horizontal"
+                      Spacing="6"
+                      VerticalAlignment="Center"
+                      TextElement.Foreground="{DynamicResource SystemControlForegroundAccentBrush}">
+            <ei:Icon Kind="Leaf" Size="20" VerticalAlignment="Center" />
+            <TextBlock Text="Text scope" VerticalAlignment="Center" />
+          </StackPanel>
+        </StackPanel>
+
+      </WrapPanel>
+    </Border>
+
+    <!-- ══ Row 2 — API coverage: both markup extensions, Stretch, and a bring-your-own SVG set ═ -->
+    <Border Grid.Row="2" Classes="panel">
+      <WrapPanel Orientation="Horizontal" ItemSpacing="28" LineSpacing="8">
+
+        <StackPanel Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
+          <TextBlock Classes="section" Text="One xmlns:ei" />
+          <StackPanel Spacing="2">
+            <ei:Icon Kind="Acorn" Size="26" Foreground="{Binding SelectedColor.Brush}" />
+            <TextBlock Classes="caption" Text="ei:Icon" />
+          </StackPanel>
+          <StackPanel Spacing="2">
+            <Path Data="{ei:IconGeometry Acorn}"
+                  Fill="{Binding SelectedColor.Brush}"
+                  Stretch="Uniform"
+                  Width="26"
+                  Height="26" />
+            <TextBlock Classes="caption" Text="ei:IconGeometry" />
+          </StackPanel>
+          <StackPanel Spacing="2">
+            <!-- Brush is set explicitly: the extension defaults to Brushes.Black, which would be
+                 invisible on a dark theme. A markup extension is evaluated once at load time and can
+                 never follow a bound brush — that is the control's job, not its own. -->
+            <Image Source="{ei:IconImage Acorn, Brush=DodgerBlue}" Width="26" Height="26" />
+            <TextBlock Classes="caption" Text="ei:IconImage" />
+          </StackPanel>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+          <TextBlock Classes="section" Text="Stretch" />
+          <!-- Deliberately non-square, so all four modes are distinguishable by eye.
+               ClipToBounds is load-bearing: Stretch="None" scales by exactly 1.0, and a Phosphor
+               glyph's view box is 256 units, so the acorn is drawn 256 DIP wide inside a 96×32 box.
+               Icon.Render only clips UniformToFill (SPEC §10.2), so an unclipped None would paint
+               right across the rest of the header. Clipping here shows the natural size honestly
+               without wrecking the layout. -->
+          <Border Width="96"
+                  Height="32"
+                  BorderThickness="1"
+                  CornerRadius="3"
+                  ClipToBounds="True"
+                  BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}">
+            <ei:Icon Kind="Acorn"
+                     Stretch="{Binding SelectedStretch}"
+                     Foreground="{Binding SelectedColor.Brush}"
+                     HorizontalAlignment="Stretch"
+                     VerticalAlignment="Stretch" />
+          </Border>
+          <ComboBox Width="130"
+                    VerticalAlignment="Center"
+                    ItemsSource="{Binding Stretches}"
+                    SelectedItem="{Binding SelectedStretch}" />
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+          <TextBlock Classes="section" Text="SvgIconSet" />
+          <!-- Not Phosphor: a one-glyph set built at runtime from inline circle / ellipse /
+               rounded-rect markup, resolved through IconSet + IconName. The by-eye check on the
+               shape → arc conversion (SPEC §5.1). -->
+          <ei:Icon IconSet="{Binding ShapesIconSet}"
+                   IconName="shapes"
+                   Size="34"
+                   Foreground="{Binding SelectedColor.Brush}" />
+          <TextBlock Classes="caption" Text="inline SVG" VerticalAlignment="Center" />
+        </StackPanel>
+
+      </WrapPanel>
+    </Border>
+
+    <!-- ══ Row 3 — the virtualized grid ══════════════════════════════════════════════════════ -->
+    <ScrollViewer Grid.Row="3"
+                  Padding="8"
+                  IsVisible="{Binding HasResults}"
+                  HorizontalScrollBarVisibility="Disabled"
+                  VerticalScrollBarVisibility="Auto">
+      <!-- A vertical virtualized list of ROWS, each row a non-virtualizing UniformGrid of ≤8 cells.
+           Avalonia 12 ships exactly one general-purpose virtualizing panel — VirtualizingStackPanel,
+           one-dimensional — so this is how a virtualized grid is built. -->
+      <ItemsControl ItemsSource="{Binding Rows}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <VirtualizingStackPanel />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:IconRow">
+            <ItemsControl ItemsSource="{Binding Cells}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <UniformGrid Columns="8" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:IconEntry">
+                  <!-- Weight, Size and Foreground bind UP to the window's ViewModel rather than being
+                       baked into IconEntry: changing one must repaint the ALREADY-REALIZED Icon
+                       controls through their AffectsRender/AffectsMeasure registrations (SPEC §10.2).
+                       Rebuilding the list instead would prove nothing. -->
+                  <Button Classes="cell"
+                          ToolTip.Tip="{Binding Name}"
+                          Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).CopyXamlCommand}"
+                          CommandParameter="{Binding}">
+                    <StackPanel Spacing="4">
+                      <ei:Icon Kind="{Binding Kind}"
+                               HorizontalAlignment="Center"
+                               Weight="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).SelectedWeight}"
+                               Size="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).IconSize}"
+                               Foreground="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).SelectedColor.Brush}" />
+                      <TextBlock Classes="caption"
+                                 Text="{Binding Name}"
+                                 TextTrimming="CharacterEllipsis"
+                                 TextAlignment="Center" />
+                    </StackPanel>
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
+
+    <TextBlock Grid.Row="3"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+               Opacity="0.7"
+               FontSize="15"
+               IsVisible="{Binding !HasResults}"
+               Text="{Binding EmptyMessage}" />
+
+    <!-- ══ Row 4 — the status line ═══════════════════════════════════════════════════════════ -->
+    <Border Grid.Row="4"
+            Padding="12,8"
+            BorderThickness="0,1,0,0"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+      <TextBlock Opacity="0.8" Text="{Binding StatusText}" />
+    </Border>
+
+  </Grid>
+</Window>

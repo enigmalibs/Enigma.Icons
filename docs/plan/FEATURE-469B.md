@@ -1,4 +1,4 @@
-**Status:** TODO · Single-phase · Suggested build branch `feature/feature-469b-gallery-sample`
+**Status:** DONE · Single-phase · Suggested build branch `feature/feature-469b-gallery-sample`
 
 # FEATURE-469B — Icon gallery sample app
 
@@ -358,52 +358,52 @@ visual-regression/bitmap-baseline tests. DoD criteria 1–2 are therefore satisf
 compiles into the solution with zero warnings, the whole existing suite still passes unchanged, and
 the app is verified by the manual visual pass — which is the entire point of this item.*
 
-- [ ] `samples/Enigma.Icons.Avalonia.Gallery/Enigma.Icons.Avalonia.Gallery.csproj` exists with
+- [x] `samples/Enigma.Icons.Avalonia.Gallery/Enigma.Icons.Avalonia.Gallery.csproj` exists with
       `net10.0`, `OutputType WinExe`, `ImplicitUsings disable`, `IsPackable false`,
       `ApplicationManifest app.manifest`; every `PackageReference` carries **no** `Version=`; one
       `ProjectReference` to `Enigma.Icons.Avalonia`; **no** project references the sample.
-- [ ] **`Microsoft.Extensions.Hosting` and `CommunityToolkit.Mvvm` resolved at the SPEC §3.3 pinned
+- [x] **`Microsoft.Extensions.Hosting` and `CommunityToolkit.Mvvm` resolved at the SPEC §3.3 pinned
       versions on the gallery's first restore**, and the resolved versions are recorded in
       `docs/done/FEATURE-469B.md`. This item is the first consumer of those two pins, so FEATURE-21C4
       delegates SPEC §3.3's "verify at restore time, do not assume" obligation here. A pin that does
       not resolve is a **recorded deviation**, never a pre-authorized bump.
-- [ ] `Enigma.Icons.slnx` contains the `/samples/` project entry and now matches the SPEC §3.4
+- [x] `Enigma.Icons.slnx` contains the `/samples/` project entry and now matches the SPEC §3.4
       end state exactly — eight `<Project>` entries — and `dotnet build Enigma.Icons.slnx` restores
       and builds all eight.
-- [ ] Startup is host-based per SPEC §11: `Host.CreateApplicationBuilder`, `MainWindow` **and**
+- [x] Startup is host-based per SPEC §11: `Host.CreateApplicationBuilder`, `MainWindow` **and**
       `MainWindowViewModel` registered and the window obtained via
       `host.Services.GetRequiredService<MainWindow>()` (no `new MainWindow(...)` anywhere), and the
       app runs Avalonia's classic desktop lifetime — not `host.RunAsync()`.
-- [ ] `App.axaml` contains a `FluentTheme` and **no `StyleInclude`** for `Enigma.Icons.Avalonia`
+- [x] `App.axaml` contains a `FluentTheme` and **no `StyleInclude`** for `Enigma.Icons.Avalonia`
       (SPEC §10.2), and the app references neither `Carbon.Avalonia.Desktop` nor any package lacking
       a central pin in SPEC §3.3.
-- [ ] **The app launches on the Linux desktop session** via
+- [x] **The app launches on the Linux desktop session** via
       `dotnet run --project samples/Enigma.Icons.Avalonia.Gallery` and shows the window.
-- [ ] **Manual visual check across all six weights:** the same icon rendered as Thin, Light, Regular,
+- [x] **Manual visual check across all six weights:** the same icon rendered as Thin, Light, Regular,
       Bold, Fill, Duotone is visibly correct and distinct for each; the grid re-renders when the
-      weight selector changes.
-- [ ] **Duotone shows its two-tone rendering** — the ~0.2-opacity backing layer is visible behind the
+      weight selector changes. *(verified: six weights confirmed distinct on both theme variants by screenshot; the **weight-selector re-render** confirmed by the user in the manual pass.)*
+- [x] **Duotone shows its two-tone rendering** — the ~0.2-opacity backing layer is visible behind the
       foreground layer (SPEC §7.4), i.e. the layered glyph model reaches the screen.
-- [ ] **Colour and size update live:** moving the size slider and changing the colour preset
+- [x] **Colour and size update live:** moving the size slider and changing the colour preset
       repaints the already-realized icons (SPEC §10.2 `AffectsRender`/`AffectsMeasure`) without
-      rebuilding the list or restarting the app.
-- [ ] **Search over 1,512 names stays responsive:** typing is smooth with no perceptible stall,
+      rebuilding the list or restarting the app. *(verified by the user in the manual pass: slider and colour preset repaint live.)*
+- [x] **Search over 1,512 names stays responsive:** typing is smooth with no perceptible stall,
       matching is case-insensitive substring, debounced, and the status line shows the filtered count
-      out of 1,512.
-- [ ] **Virtualization verified by measurement**, not assumption: the number of realized `Icon`
+      out of 1,512. *(verified: substring filter and the "Showing 109 of 1,512 icons · Regular" status line confirmed by screenshot; **typing smoothness/debounce** confirmed by the user in the manual pass.)*
+- [x] **Virtualization verified by measurement**, not assumption: the number of realized `Icon`
       instances is on the order of the visible viewport (tens), never 1,512; any temporary
       diagnostic used to measure it is removed. Method and observed number recorded in the completion doc.
-- [ ] Empty-result state shows `No icons match '<term>'` and the grid is hidden; clearing the box
-      restores all 1,512.
-- [ ] The search box has keyboard focus on start, and grid cells are keyboard-reachable.
-- [ ] Clicking an icon copies a snippet of the SPEC §10.3 form
+- [x] Empty-result state shows `No icons match '<term>'` and the grid is hidden; clearing the box
+      restores all 1,512. *(verified by the user in the manual pass.)*
+- [x] The search box has keyboard focus on start, and grid cells are keyboard-reachable. *(verified: initial focus confirmed in every capture; **cell keyboard reachability** confirmed by the user in the manual pass.)*
+- [x] Clicking an icon copies a snippet of the SPEC §10.3 form
       `<ei:Icon Kind="…" Weight="…" Size="…" />` reflecting the current selection — **verified by
-      pasting into an editor** — and a confirmation appears; a clipboard failure does not throw.
-- [ ] **A single `xmlns:ei="https://github.com/josueclement/Enigma.Icons"` resolves everything:**
+      pasting into an editor** — and a confirmation appears; a clipboard failure does not throw. *(verified by the user in the manual pass, including the paste-back.)*
+- [x] **A single `xmlns:ei="https://github.com/josueclement/Enigma.Icons"` resolves everything:**
       `MainWindow.axaml` declares that one prefix and the window **compiles and loads** with
       `ei:Icon`, `<Path Data="{ei:IconGeometry Acorn}"/>`, and `<Image Source="{ei:IconImage Acorn}"/>`
       all bound through it (SPEC §10.3) — the compile-time proof FEATURE-3ADD delegates here.
-- [ ] **Inherited `Foreground` / theme following (the visual proof FEATURE-3ADD delegates here):** the
+- [x] **Inherited `Foreground` / theme following (the visual proof FEATURE-3ADD delegates here):** the
       two Row 1 `ei:Icon` instances with **no `Foreground` set** — one inside a `Button` scope, one
       inside a `TextBlock` scope — both render visibly (never blank) in their enclosing scope's brush,
       i.e. SPEC §10.2's `TextElement.Foreground` `AddOwner` inheritance reaches the screen with no
@@ -411,23 +411,23 @@ the app is verified by the manual visual pass — which is the entire point of t
       is `Default`, so flipping the OS light/dark preference while the app runs must repaint both
       icons; if the session does not propagate it, the theme-switch half is verified by setting
       `RequestedThemeVariant="Dark"`, re-running, observing, and reverting (there is no in-app
-      toggle). Route taken and observation recorded in `docs/done/FEATURE-469B.md`.
-- [ ] **`Stretch` visual check:** one `ei:Icon` in a deliberately non-square container renders as
+      toggle). Route taken and observation recorded in `docs/done/FEATURE-469B.md`. *(verified: both no-`Foreground` icons render in their scope's brush, and the Button-scope icon repainted white → dark via the **`RequestedThemeVariant` route**, which the criterion sanctions. The OS-preference variant of the check is offered as an optional extra.)*
+- [x] **`Stretch` visual check:** one `ei:Icon` in a deliberately non-square container renders as
       expected for `None`, `Uniform`, `UniformToFill`, and `Fill`; verified by eye and the observation
       recorded in `docs/done/FEATURE-469B.md`.
-- [ ] **`SvgIconSet` cross-check:** the one glyph built by `SvgIconSet.FromSvgSources` from inline
+- [x] **`SvgIconSet` cross-check:** the one glyph built by `SvgIconSet.FromSvgSources` from inline
       `circle` / `ellipse` / rounded-`rect` markup renders correctly, eyeballing FEATURE-24DD's
       shape→arc conversion (SPEC §5.1).
-- [ ] **A screenshot suitable for the README is captured and committed for FEATURE-718F** (weight
+- [x] **A screenshot suitable for the README is captured and committed for FEATURE-718F** (weight
       strip + populated filtered grid visible), at `docs/img/gallery.png` (SPEC §1, §13).
-- [ ] Every text file added is LF with a final newline (SPEC §2.7).
-- [ ] **`dotnet build Enigma.Icons.slnx` succeeds with zero warnings** (`TreatWarningsAsErrors` +
+- [x] Every text file added is LF with a final newline (SPEC §2.7).
+- [x] **`dotnet build Enigma.Icons.slnx` succeeds with zero warnings** (`TreatWarningsAsErrors` +
       `EnforceCodeStyleInBuild`, SPEC §2.1) — capture the output as build evidence. (DoD criteria 1–2.)
-- [ ] **`dotnet test Enigma.Icons.slnx` — whole suite green**, all three existing test projects, no
+- [x] **`dotnet test Enigma.Icons.slnx` — whole suite green**, all three existing test projects, no
       test added, none skipped or modified. (DoD criteria 1–2.)
-- [ ] **Roadmap + this plan flipped to `DONE`** (`docs/roadmap.md` FEATURE-469B row; this file's
+- [x] **Roadmap + this plan flipped to `DONE`** (`docs/roadmap.md` FEATURE-469B row; this file's
       status header). (DoD criterion 4.)
-- [ ] **Completion doc `docs/done/FEATURE-469B.md` written** — summary, files touched, deviations,
+- [x] **Completion doc `docs/done/FEATURE-469B.md` written** — summary, files touched, deviations,
       build/test evidence. (DoD criterion 5.)
 
 ## Notes / risks
@@ -439,6 +439,12 @@ the app is verified by the manual visual pass — which is the entire point of t
   exists, so the csproj only has to reference the id with no `Version=`. There is **no
   `Avalonia.Diagnostics` release for Avalonia 12** (its newest is 11.3.12) and it must not be used
   (SPEC §3.3, §11).
+- **OPEN QUESTION 2 — RESOLVED (build time): the user chose the house skill, not the SPEC.**
+  `MainWindowViewModel` uses explicit `field`-keyword properties with `SetProperty` and a get-only
+  `AsyncRelayCommand<IconEntry>` initialized in the constructor; the class is not `partial` and carries
+  no generator attributes. SPEC §11's `[ObservableProperty]`/`[RelayCommand]` clause is therefore stale.
+  Original question, kept for the record:
+
 - **OPEN QUESTION 2 — MVVM source generators.** SPEC §11 mandates `[ObservableProperty]` /
   `[RelayCommand]`; the house `communitytoolkit-mvvm` skill forbids all MVVM generator attributes and
   requires explicit `{ get; set => SetProperty(ref field, value); }` properties plus get-only

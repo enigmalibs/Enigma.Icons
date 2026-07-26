@@ -1157,11 +1157,19 @@ Usage:
 xmlns:ei="https://github.com/josueclement/Enigma.Icons"
 
 <ei:Icon Kind="Acorn" Weight="Duotone" Size="24"
-         Foreground="{DynamicResource SystemAccentColorBrush}" />
+         Foreground="{DynamicResource SystemControlForegroundAccentBrush}" />
 
 <Path Data="{ei:IconGeometry Acorn, Weight=Bold}" Fill="Black" Stretch="Uniform" />
 <Image Source="{ei:IconImage Acorn, Weight=Fill, Brush=Red}" Width="24" Height="24" />
 ```
+
+> **The accent brush key is `SystemControlForegroundAccentBrush`, not `SystemAccentColorBrush`.**
+> Corrected during FEATURE-469B, which is the first code in this solution to actually resolve it.
+> `Avalonia.Themes.Fluent` 12.0.4 defines `SystemAccentColor` (a **`Color`**) and derived brushes such
+> as `SystemControlForegroundAccentBrush`, but no `SystemAccentColorBrush` — verified against the
+> compiled theme assembly. The distinction matters more here than elsewhere: an unresolved
+> `DynamicResource` yields a null `Foreground`, and §10.2 makes a null `Foreground` paint **nothing**,
+> so the documented snippet would have produced an invisible icon with no error anywhere.
 
 C#:
 
@@ -1231,7 +1239,21 @@ material.
 
 - Wires `Host.CreateApplicationBuilder`, resolves `MainWindow` and its ViewModel from
   `host.Services`, and runs Avalonia's own lifetime (per the `avalonia` and `dotnet-solution-setup`
-  skills). `CommunityToolkit.Mvvm` for `[ObservableProperty]`/`[RelayCommand]`.
+  skills). `CommunityToolkit.Mvvm` in the **house explicit style** — `field`-keyword properties with
+  `SetProperty`, and get-only `RelayCommand`/`AsyncRelayCommand` properties initialized in the
+  constructor.
+  > **Corrected during FEATURE-469B.** This clause previously read "`CommunityToolkit.Mvvm` for
+  > `[ObservableProperty]`/`[RelayCommand]`", which the house `communitytoolkit-mvvm` skill forbids
+  > outright — it bans every MVVM generator attribute. The two could not both be satisfied; the user
+  > chose the skill, so the ViewModel carries no generator attributes and is not `partial`. The
+  > shipped code is the authority here.
+- **Compiled bindings must be switched on explicitly.** Avalonia 12.0.4's
+  `AvaloniaBuildTasks.targets` defaults `AvaloniaUseCompiledBindingsByDefault` to **`false`** and
+  passes it to the XAML compiler as `DefaultCompileBindings`, so an app that omits it gets reflection
+  bindings and every `x:DataType` becomes decorative. The gallery sets it to `true`, which is what
+  makes a mistyped binding path a build error (`AVLN2000`) instead of a silent runtime miss. Verified
+  at FEATURE-469B build time against the pinned version — do not assume the Avalonia templates' or
+  the `avalonia` skill's "on by default" claim.
 - Plain Avalonia + `Avalonia.Themes.Fluent` + `Avalonia.Fonts.Inter`, plus
   `AvaloniaUI.DiagnosticsSupport` under a `Debug`-only condition (**not** `Avalonia.Diagnostics`,
   which has no Avalonia 12 release — see §3.3). **Deliberately not** `Carbon.Avalonia.Desktop` —

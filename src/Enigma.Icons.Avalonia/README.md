@@ -41,7 +41,7 @@ xmlns:ei="https://github.com/josueclement/Enigma.Icons"
 
 ```xml
 <ei:Icon Kind="Acorn" Weight="Duotone" Size="24"
-         Foreground="{DynamicResource SystemAccentColorBrush}" />
+         Foreground="{DynamicResource SystemControlForegroundAccentBrush}" />
 
 <Path Data="{ei:IconGeometry Acorn, Weight=Bold}" Fill="Black" Stretch="Uniform" />
 <Image Source="{ei:IconImage Acorn, Weight=Fill, Brush=Red}" Width="24" Height="24" />
