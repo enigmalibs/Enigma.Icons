@@ -2,10 +2,12 @@
   <Folder Name="/src/">
     <Project Path="src/Enigma.Icons/Enigma.Icons.csproj" />
     <Project Path="src/Enigma.Icons.Phosphor/Enigma.Icons.Phosphor.csproj" />
+    <Project Path="src/Enigma.Icons.Avalonia/Enigma.Icons.Avalonia.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Enigma.Icons.UnitTests/Enigma.Icons.UnitTests.csproj" />
     <Project Path="tests/Enigma.Icons.Phosphor.UnitTests/Enigma.Icons.Phosphor.UnitTests.csproj" />
+    <Project Path="tests/Enigma.Icons.Avalonia.UnitTests/Enigma.Icons.Avalonia.UnitTests.csproj" />
   </Folder>
   <Folder Name="/samples/" />
   <Folder Name="/tools/">

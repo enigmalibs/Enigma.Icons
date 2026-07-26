@@ -1069,7 +1069,7 @@ Behaviour:
 | Re-own it on `Icon` | `Avalonia.StyledProperty<TValue>.AddOwner<TOwner>(StyledPropertyMetadata<TValue>)` — the metadata argument is optional, so `AddOwner<Icon>()` is expected to compile; pass `null` explicitly if it does not |
 | Render invalidation | `Avalonia.Visual.AffectsRender<TOwner>(params AvaloniaProperty[])` |
 | Measure invalidation | `Avalonia.Layout.Layoutable.AffectsMeasure<TOwner>(params AvaloniaProperty[])` — on `Layoutable`, **not** `Visual` |
-| Render override | `protected override void Render(Avalonia.Media.DrawingContext)` — declared on `Avalonia.Visual` |
+| Render override | `public override void Render(Avalonia.Media.DrawingContext)` — declared **public** on `Avalonia.Visual` in Avalonia 12 (it was `protected` in 11), so an override may not narrow it: `protected` is CS0507. Corrected against 12.0.4 by FEATURE-3ADD. |
 | Stretch enum | `Avalonia.Media.Stretch` |
 
 - `Foreground` is registered with `TextElement.ForegroundProperty.AddOwner<Icon>()`, so an `Icon`
@@ -1308,9 +1308,15 @@ corpus, so a bad regeneration cannot ship silently.
 
 `Avalonia.Headless.XUnit` at **whatever version `Directory.Packages.props` pins for the Avalonia
 group** (§3.3 — 12.0.4, with 12.0.2 as the documented whole-group fallback), used via
-`[AvaloniaTest]`. §3.3 is the only **normative** place a version is pinned. Version numbers may appear elsewhere in
+`[AvaloniaFact]` / `[AvaloniaTheory]`. §3.3 is the only **normative** place a version is pinned. Version numbers may appear elsewhere in
 this document and in plans only as dated verification notes — never as the value to write into a
 project file.
+
+> **Attribute names.** Avalonia 12's `Avalonia.Headless.XUnit` exposes `AvaloniaFactAttribute` and
+> `AvaloniaTheoryAttribute`; there is no `AvaloniaTestAttribute` — that was the Avalonia 11 name.
+> Verified against 12.0.4 by FEATURE-3ADD. The rule behind the name is unchanged: **every** test
+> method carries the Avalonia attribute, never a plain `[Fact]`/`[Theory]`, because `Geometry.Parse`
+> needs the platform render interface even in a pure geometry test.
 
 - `ToGeometry`: single layer → parseable, non-empty bounds; multi-layer → `GeometryGroup` with the
   right child count; the documented opacity-loss behaviour is asserted so it stays deliberate.

@@ -46,11 +46,12 @@ The test runner is Microsoft.Testing.Platform, selected by `global.json` (SPEC �
 `Microsoft.NET.Test.Sdk` or VSTest in this solution.
 
 > The solution is being built incrementally, so not every path above exists yet. As of
-> FEATURE-3950 the slnx holds five projects — `src/Enigma.Icons`, `src/Enigma.Icons.Phosphor`,
-> `tests/Enigma.Icons.UnitTests`, `tests/Enigma.Icons.Phosphor.UnitTests` and
-> `tools/Enigma.Icons.Generator`. `src/Enigma.Icons.Avalonia` and
-> `samples/Enigma.Icons.Avalonia.Gallery` do not exist yet, so `dotnet pack` currently applies to
-> `Enigma.Icons` and `Enigma.Icons.Phosphor` only.
+> FEATURE-3ADD the slnx holds seven of the eight end-state projects (SPEC §3.4) —
+> `src/Enigma.Icons`, `src/Enigma.Icons.Phosphor`, `src/Enigma.Icons.Avalonia`,
+> `tests/Enigma.Icons.UnitTests`, `tests/Enigma.Icons.Phosphor.UnitTests`,
+> `tests/Enigma.Icons.Avalonia.UnitTests` and `tools/Enigma.Icons.Generator`. Only
+> `samples/Enigma.Icons.Avalonia.Gallery` is still missing, so `dotnet pack` applies to all three
+> packable projects: `Enigma.Icons`, `Enigma.Icons.Phosphor` and `Enigma.Icons.Avalonia`.
 
 ## Architecture
 

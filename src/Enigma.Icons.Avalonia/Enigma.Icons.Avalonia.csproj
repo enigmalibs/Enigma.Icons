@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Shared settings (LangVersion, Nullable, TreatWarningsAsErrors, EnforceCodeStyleInBuild,
+       Authors, Copyright) are inherited from Directory.Build.props — SPEC §3.2. -->
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <!-- SPEC §0/§10: net8.0;net10.0 only — NOT the netstandard2.0;net8.0;net10.0 of the two sibling
+         packages. Avalonia 12.0.4 ships lib/net8.0 and lib/net10.0 assets and nothing else, so a
+         netstandard2.0 TFM could not resolve the dependency at all. -->
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <ImplicitUsings>disable</ImplicitUsings>
+
+    <PackageId>Enigma.Icons.Avalonia</PackageId>
+    <Title>Enigma.Icons.Avalonia — icons for Avalonia</Title>
+    <Version>1.0.0</Version>
+    <Description>Avalonia rendering for Enigma.Icons: IconGlyph to Geometry/Drawing/DrawingImage conversion, the Icon control whose Foreground inherits from its TextElement scope, and the IconGeometry/IconImage markup extensions. Works with any IIconSet, Phosphor included.</Description>
+    <PackageTags>enigma icons icon avalonia avaloniaui phosphor svg vector geometry xaml markup-extension icon-set dotnet open-source</PackageTags>
+
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/josueclement/Enigma.Icons</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/josueclement/Enigma.Icons</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- SPEC §10.4: unconditional here, unlike the two multi-targeting packages, which condition the
+         same pair on '$(TargetFramework)' != 'netstandard2.0'. That condition is vacuous for this
+         TFM set. The asymmetry is intentional and SPEC-sanctioned — a release audit must not flag it
+         as a deviation nor "fix" it by adding a no-op condition. -->
+    <IsTrimmable>true</IsTrimmable>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- No Version= — Central Package Management (SPEC §2.5, §3.3). -->
+    <PackageReference Include="Avalonia" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Enigma.Icons arrives transitively through Enigma.Icons.Phosphor (SPEC §10). A second, direct
+         ProjectReference to it would be a redundant edge to keep in sync — deliberately absent. -->
+    <ProjectReference Include="..\Enigma.Icons.Phosphor\Enigma.Icons.Phosphor.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\LICENSE.md" Pack="true" PackagePath="\" />
+    <!-- THIRD-PARTY-NOTICES.md is deliberately NOT packed here (SPEC §14.2). Phosphor's MIT
+         attribution obligation attaches to a package that carries a substantial portion of the
+         artwork; this package ships no artwork and no third-party code, only a reference to
+         Enigma.Icons.Phosphor, which packs the notice itself. Do not "fix" this omission. -->
+  </ItemGroup>
+
+  <!-- The layer-paint helper shared by ToDrawing and Icon.Render is internal, and the never-throw
+       contract of Icon.Render is asserted through it when the headless platform cannot be driven to
+       a render pass. Adds nothing to the public API. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="Enigma.Icons.Avalonia.UnitTests" />
+  </ItemGroup>
+
+</Project>
