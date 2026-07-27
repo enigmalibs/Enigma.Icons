@@ -17,6 +17,14 @@ namespace Enigma.Icons.Avalonia;
 /// committed asset is a bug, not a runtime condition — the one place that rule is relaxed is
 /// <see cref="Icon"/>, whose render pass must keep the XAML previewer alive.
 /// </para>
+/// <para>
+/// <b>Every call parses afresh, and the result is yours.</b> <see cref="Icon"/> caches its parsed
+/// geometry per glyph because it never hands it out; these methods do hand it out, and a
+/// <see cref="Geometry"/> is mutable — its <see cref="Geometry.Transform"/> is settable — so a shared
+/// instance would let one caller's change reach every other. Two calls for the same glyph therefore
+/// return independent objects, which is also what putting one in a <see cref="GeometryGroup"/> and
+/// another in a <c>Path.Data</c> requires.
+/// </para>
 /// </remarks>
 public static class IconGlyphExtensions
 {

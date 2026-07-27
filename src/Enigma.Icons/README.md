@@ -131,9 +131,9 @@ SVG from outside your application is untrusted XML, and this parser treats it th
   (external-entity file disclosure) nor an entity-expansion bomb is possible — an entity is never
   even *defined*. This matters: on `netstandard2.0` the platform's own XML defaults are not safe.
 - **Input larger than `MaxDocumentBytes` is rejected before parsing**, and
-  `SvgIconSet.FromDirectory` stays inside its root — it never recurses, never follows a directory
-  symlink out of the root, and drops any resolved path that escapes it. No package in this family
-  makes network access of any kind.
+  `SvgIconSet.FromDirectory` stays inside its root — it never recurses, skips symlinked variant
+  subdirectories *and* symlinked `.svg` files, and drops any resolved path that escapes the root. No
+  package in this family makes network access of any kind.
 
 ## What the parser does not support
 

@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using Enigma.Icons.Internal;
 
 // The model types (IconGlyph, IconLayer, IconViewBox, IIconSet, IconNotFoundException) live in the
 // enclosing Enigma.Icons namespace and need no using directive here.
@@ -136,7 +137,7 @@ public sealed class PhosphorIconSet : IIconSet
 
     /// <summary>Non-throwing lookup by name.</summary>
     /// <param name="icon">The icon name, in kebab-case, <c>snake_case</c> or PascalCase, case-insensitively.</param>
-    /// <param name="variant">One of the six weight names, case-insensitively, or null for <see cref="DefaultVariant"/>.</param>
+    /// <param name="variant">One of the six weight names, normalized exactly as an icon name is — case-insensitively, with surrounding whitespace trimmed and <c>_</c>, space and tab read as <c>-</c> — or null for <see cref="DefaultVariant"/>.</param>
     /// <param name="glyph">The resolved glyph, or null on a miss.</param>
     /// <returns><see langword="true"/> when the icon was found.</returns>
     /// <remarks>
@@ -174,7 +175,7 @@ public sealed class PhosphorIconSet : IIconSet
 
     /// <summary>Throwing lookup by name.</summary>
     /// <param name="icon">The icon name, in kebab-case, <c>snake_case</c> or PascalCase, case-insensitively.</param>
-    /// <param name="variant">One of the six weight names, case-insensitively, or null for <see cref="DefaultVariant"/>.</param>
+    /// <param name="variant">One of the six weight names, normalized exactly as an icon name is — case-insensitively, with surrounding whitespace trimmed and <c>_</c>, space and tab read as <c>-</c> — or null for <see cref="DefaultVariant"/>.</param>
     /// <returns>The resolved glyph. Repeated calls for the same pair return the same instance.</returns>
     /// <remarks>
     /// <b>A variant this set does not have is a miss, never a silent fallback</b> — asking for
@@ -244,7 +245,19 @@ public sealed class PhosphorIconSet : IIconSet
             return true;
         }
 
-        return WeightsByName.TryGetValue(variant, out weight);
+        // The same normalizer SvgIconSet runs its variants through, reached over InternalsVisibleTo:
+        // IIconSet documents one normalization rule for names AND variants, so a bare dictionary
+        // probe on the raw string would leave the two in-house implementations disagreeing about
+        // " Duotone " and "duo_tone". Normalizing first, then probing the still-OrdinalIgnoreCase
+        // table, keeps a weight the set does not have a miss rather than a fallback.
+        string? normalized = IconNameNormalizer.TryNormalize(variant);
+        if (normalized is null)
+        {
+            weight = PhosphorWeight.Regular;
+            return false;
+        }
+
+        return WeightsByName.TryGetValue(normalized, out weight);
     }
 
     private static Dictionary<string, PhosphorWeight> BuildWeightLookup()

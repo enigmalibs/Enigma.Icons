@@ -29,7 +29,7 @@ public sealed class SvgIconSet : IIconSet
     private const string FallbackSetName = "SvgIcons";
 
     private static readonly ReadOnlyCollection<string> _noVariants =
-        new ReadOnlyCollection<string>(new string[0]);
+        new ReadOnlyCollection<string>(Array.Empty<string>());
 
     private readonly Dictionary<string, Dictionary<string, SvgSource>> _index;
     private readonly ConcurrentDictionary<(string Variant, string Name), Lazy<IconGlyph>> _cache =
@@ -73,6 +73,14 @@ public sealed class SvgIconSet : IIconSet
     public string? DefaultVariant { get; }
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// The <b>union</b> of the icon names of every variant. A listed name is therefore not
+    /// guaranteed to resolve in every variant — including <see cref="DefaultVariant"/>: a tree
+    /// missing one icon in one variant still lists that name, and
+    /// <see cref="TryGetGlyph(string, string?, out IconGlyph?)"/> returns false for the variants
+    /// that do not have it. The property answers "what icons does this set know about", not "what
+    /// resolves in the default variant".
+    /// </remarks>
     public IEnumerable<string> IconNames { get; }
 
     /// <summary>Icons from a directory of .svg files.</summary>
@@ -95,9 +103,12 @@ public sealed class SvgIconSet : IIconSet
     /// file-name order wins.
     /// </para>
     /// <para>
-    /// <b>Path safety.</b> Only <c>.svg</c> files directly inside the root (or directly inside one
-    /// variant subdirectory) are read — never recursively. Directory symlinks are not followed, and
-    /// any resolved path that escapes the root is dropped.
+    /// <b>Path safety.</b> Enumeration is top-directory-only: only <c>.svg</c> files directly inside
+    /// the root (or, with variants, directly inside one variant subdirectory) are read — never
+    /// recursively. Symlinked variant subdirectories <i>and</i> symlinked <c>.svg</c> files are
+    /// skipped, so no entry can point the set at content outside the root; every path that is read is
+    /// additionally constrained to the root. A skipped entry is dropped silently, so one hostile entry
+    /// cannot deny service on an otherwise valid directory.
     /// </para>
     /// </remarks>
     /// <exception cref="ArgumentNullException"><paramref name="path"/> is null.</exception>
@@ -484,8 +495,20 @@ public sealed class SvgIconSet : IIconSet
         {
             string full = Path.GetFullPath(file);
 
-            // A non-contained path is dropped silently rather than thrown, so one hostile entry
-            // cannot deny service on an otherwise valid directory.
+            // Path.GetFullPath does not resolve symlinks, so root/evil.svg -> /etc/passwd yields a
+            // path that is literally inside the root. The same portable ReparsePoint test the
+            // directory loop uses is therefore the mechanism that stops a symlinked file, and it
+            // runs before IsWithin. Skipped silently, like a non-contained path below, so one
+            // hostile entry cannot deny service on an otherwise valid directory.
+            if ((new FileInfo(full).Attributes & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint)
+            {
+                continue;
+            }
+
+            // Defence-in-depth only: every candidate comes from an enumerator rooted at the root and
+            // enumeration is top-directory-only, so this cannot currently reject anything. It guards
+            // a future change to how files are discovered. A non-contained path is dropped silently
+            // rather than thrown, for the same reason as above.
             if (!PathSafety.IsWithin(root, full))
             {
                 continue;

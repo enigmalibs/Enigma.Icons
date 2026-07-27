@@ -18,11 +18,11 @@ Row order is the intended build order — `/build` surfaces the topmost `TODO` f
 | FEATURE-718F | Documentation (root + 3 packed READMEs)                                      | DONE   | docs/plan/FEATURE-718F.md |
 | FEATURE-74DC | Release preparation & NuGet publish runbook (v1.0.0 ×3)                      | DONE   | docs/plan/FEATURE-74DC.md |
 | FEATURE-6FA1 | Enigma.Icons.Wpf renderer package — **DEFERRED post-1.0, do not build yet**   | TODO   | docs/plan/FEATURE-6FA1.md |
-| CODE-REVIEW-1FD4 | Post-1.0 review fixes (6 accepted findings, 4 phases)                    | TODO   | docs/plan/CODE-REVIEW-1FD4.md |
-| - PHASE01    | [Medium] Icon.Render re-parses geometry every render pass                    | TODO   | (in CODE-REVIEW-1FD4.md)  |
-| - PHASE02    | [Medium] PhosphorIconSet variant lookup diverges from the IIconSet contract  | TODO   | (in CODE-REVIEW-1FD4.md)  |
-| - PHASE03    | [Low] SvgIconSet.FromDirectory follows symlinked .svg files out of its root  | TODO   | (in CODE-REVIEW-1FD4.md)  |
-| - PHASE04    | [Low] Documentation and cosmetic sweep (byte count, IconNames doc, Array.Empty) | TODO | (in CODE-REVIEW-1FD4.md) |
+| CODE-REVIEW-1FD4 | Post-1.0 review fixes (6 accepted findings, 4 phases)                    | DONE   | docs/plan/CODE-REVIEW-1FD4.md |
+| - PHASE01    | [Medium] Icon.Render re-parses geometry every render pass                    | DONE   | (in CODE-REVIEW-1FD4.md)  |
+| - PHASE02    | [Medium] PhosphorIconSet variant lookup diverges from the IIconSet contract  | DONE   | (in CODE-REVIEW-1FD4.md)  |
+| - PHASE03    | [Low] SvgIconSet.FromDirectory follows symlinked .svg files out of its root  | DONE   | (in CODE-REVIEW-1FD4.md)  |
+| - PHASE04    | [Low] Documentation and cosmetic sweep (byte count, IconNames doc, Array.Empty) | DONE | (in CODE-REVIEW-1FD4.md) |
 | FEATURE-1608 | docs/internals.html — maintainer's how-it-works explainer                    | TODO   | docs/plan/FEATURE-1608.md |
 
 `FEATURE-21C4` … `FEATURE-6FA1` are single-phase `FEATURE`s — no phase rows. `CODE-REVIEW-1FD4` is

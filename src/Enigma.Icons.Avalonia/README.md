@@ -72,7 +72,7 @@ Geometry geometry = PhosphorIconSet.Instance
 | `Size` | `16` | The measured size on both axes |
 | `Stretch` | `Uniform` | `None`, `Uniform`, `UniformToFill`, `Fill` |
 
-Three behaviours are worth stating outright:
+Four behaviours are worth stating outright:
 
 - **`Foreground` inherits.** It re-owns `TextElement.ForegroundProperty`, which is an inheriting
   property, so an icon inside a `Button`, a `MenuItem`, a `TextBlock` — any text scope — picks up
@@ -83,6 +83,11 @@ Three behaviours are worth stating outright:
 - **`Render` never throws.** A missing glyph, an unresolvable name, or a misbehaving third-party icon
   set all paint nothing — a throwing render pass would take down the XAML previewer's surface for the
   whole window, not just the icon.
+- **Path data is parsed once per glyph, not once per frame.** A resize, a theme switch or a scroll
+  through a virtualized list re-renders every visible icon; the parsed geometry is held against the
+  glyph itself, so those passes cost no parsing at all — and many controls showing the same icon
+  share one parse. The cache holds its glyphs weakly, so a custom `IIconSet` that goes out of scope
+  is collected normally.
 
 ```xml
 <Button Content="Delete">
@@ -140,6 +145,11 @@ A `Geometry` has no per-child opacity and one shared fill rule, so every layer p
 opacity. For the two-layer `Duotone` weight that means the backing shape comes out solid — visually
 wrong, and deliberately allowed, because a single `Geometry` is what `Path.Data` needs. **Use
 `ToDrawing`, or the `Icon` control, for duotone**; both walk the layers and honour each one's opacity.
+
+**Every call parses afresh, and the result is yours to keep or mutate.** Unlike the `Icon` control,
+which caches its parsed geometry per glyph because it never hands it out, these methods return an
+independent object each time — so setting `Transform` on one, or putting it in a `GeometryGroup`,
+can never disturb another caller holding the same icon.
 
 ## Works with any `IIconSet`
 

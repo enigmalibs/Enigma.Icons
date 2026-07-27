@@ -37,9 +37,13 @@
   </ItemGroup>
 
   <!-- Lets the unit tests exercise the Enigma.Icons.Internal helpers directly. Adds nothing to
-       the public API. -->
+       the public API. The sibling asset pack is here for the same reason: PhosphorIconSet normalizes
+       its variant names through the very IconNameNormalizer SvgIconSet uses, so the two in-house
+       IIconSet implementations cannot fork the normalization rule the interface documents
+       (CODE-REVIEW-1FD4 PHASE02). Neither assembly is signed, so no public key is needed. -->
   <ItemGroup>
     <InternalsVisibleTo Include="Enigma.Icons.UnitTests" />
+    <InternalsVisibleTo Include="Enigma.Icons.Phosphor" />
   </ItemGroup>
 
   <!-- SPEC §2.10: this project has ZERO PackageReference entries, on every TFM. That is a hard

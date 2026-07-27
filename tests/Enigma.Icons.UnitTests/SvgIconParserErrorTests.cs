@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -113,6 +114,29 @@ public sealed class SvgIconParserErrorTests
                 () => SvgIconParser.Parse("<svg><path d=\"" + new string('0', 200) + "\" /></svg>"));
 
             Assert.Contains("MaxDocumentBytes", error.Message, StringComparison.Ordinal);
+        }
+        finally
+        {
+            SvgIconParser.MaxDocumentBytes = original;
+        }
+    }
+
+    [Fact]
+    public void Parse_ReportsTheTrueUtf8ByteCountOfAnOverLimitString()
+    {
+        // Every 'é' is one UTF-16 code unit but two UTF-8 bytes, so a code-unit count would
+        // understate the size the message claims to state.
+        string svg = "<svg><path d=\"" + new string('é', 200) + "\" /></svg>";
+        int bytes = Encoding.UTF8.GetByteCount(svg);
+        int original = SvgIconParser.MaxDocumentBytes;
+        try
+        {
+            SvgIconParser.MaxDocumentBytes = 64;
+
+            SvgParseException error = Assert.Throws<SvgParseException>(() => SvgIconParser.Parse(svg));
+
+            Assert.Contains(bytes.ToString(CultureInfo.InvariantCulture), error.Message, StringComparison.Ordinal);
+            Assert.DoesNotContain(svg.Length.ToString(CultureInfo.InvariantCulture), error.Message, StringComparison.Ordinal);
         }
         finally
         {

@@ -1,4 +1,4 @@
-**Status:** TODO · Multi-phase (4 phases) · Branches `review/code-review-1fd4-phaseNN-<slug>`
+**Status:** DONE · Multi-phase (4 phases, all complete) · Branches `review/code-review-1fd4-phaseNN-<slug>`
 
 # CODE-REVIEW-1FD4 — Post-1.0 review fixes
 
@@ -86,7 +86,15 @@ Every phase must hold all of these, not just its own acceptance criteria:
 
 ## PHASE01 — [Medium] `Icon.Render` re-parses geometry on every render pass
 
-**Status:** TODO · Branch `review/code-review-1fd4-phase01-geometry-cache`
+**Status:** DONE · Branch `review/code-review-1fd4-phase01-geometry-cache` ·
+Completion record `docs/done/CODE-REVIEW-1FD4-PHASE01.md`
+
+> **Outcome:** the cache is scoped to `Icon.Render`, as design step 3 permits. Sharing into
+> `ToGeometry`/`ToDrawing` was probed and rejected — Avalonia 12.1.0's `Geometry` carries no
+> owner state (so the framework would allow it), but `Geometry.Parse` returns a `StreamGeometry`
+> with a public settable `Transform`, and those two methods hand their result to the consumer.
+> The `Pen` hoist was declined: the pen depends on the caller's brush, so it cannot be cached
+> cleanly, and no built-in Phosphor glyph reaches that path.
 
 **Location:** `src/Enigma.Icons.Avalonia/Icon.cs:309`, `src/Enigma.Icons.Avalonia/IconGlyphExtensions.cs:152`
 
@@ -142,7 +150,14 @@ and its glyphs be collected normally.
 
 ## PHASE02 — [Medium] `PhosphorIconSet` variant lookup diverges from the `IIconSet` contract
 
-**Status:** TODO · Branch `review/code-review-1fd4-phase02-variant-parity`
+**Status:** DONE · Branch `review/code-review-1fd4-phase02-variant-parity` ·
+Completion record `docs/done/CODE-REVIEW-1FD4-PHASE02.md`
+
+> **Outcome:** the **preferred** option was taken — `<InternalsVisibleTo Include="Enigma.Icons.Phosphor" />`
+> on `Enigma.Icons`, so `TryResolveWeight` calls the one `IconNameNormalizer` rather than forking the
+> rule. One existing assertion had to move: `PhosphorIconSetTests` pinned `"regular "` (trailing
+> space) as a **miss**, which is exactly the behaviour this phase corrects — it was replaced by
+> spellings that still miss after normalization (`"   "`, `"duo-tone"`, `"DuoTone"`).
 
 **Location:** `src/Enigma.Icons.Phosphor/PhosphorIconSet.cs:239-248` (`TryResolveWeight`), against
 `src/Enigma.Icons/IIconSet.cs:13-15` and `src/Enigma.Icons/SvgIconSet.cs:371-385`
@@ -198,7 +213,14 @@ the "a variant the set does not have is a miss, never a fallback" rule.
 
 ## PHASE03 — [Low] `SvgIconSet.FromDirectory` follows symlinked `.svg` files out of its root
 
-**Status:** TODO · Branch `review/code-review-1fd4-phase03-symlinked-files`
+**Status:** DONE · Branch `review/code-review-1fd4-phase03-symlinked-files` ·
+Completion record `docs/done/CODE-REVIEW-1FD4-PHASE03.md`
+
+> **Outcome:** all three design steps implemented as written. The `ReparsePoint` test runs **before**
+> `PathSafety.IsWithin`, since it is the mechanism that actually stops a symlinked file. Because the
+> skip is on the attribute and not on the link target (`FileSystemInfo.LinkTarget` is .NET 6+), a
+> symlink pointing *inside* the root is skipped too — deliberate, documented, and pinned by a fourth
+> test beyond the plan's criteria. The four new tests were verified to fail with the guard removed.
 
 **Location:** `src/Enigma.Icons/SvgIconSet.cs:465-508` (`AddDirectoryFiles`), against the guarantee in
 its own `<remarks>` at `SvgIconSet.cs:97-101`
@@ -249,7 +271,16 @@ mechanism that stops traversal.
 
 ## PHASE04 — [Low] Documentation and cosmetic sweep
 
-**Status:** TODO · Branch `review/code-review-1fd4-phase04-doc-cosmetic-sweep`
+**Status:** DONE · Branch `review/code-review-1fd4-phase04-doc-cosmetic-sweep` ·
+Completion record `docs/done/CODE-REVIEW-1FD4-PHASE04.md`
+
+> **Outcome:** all three findings fixed as written. The size gate keeps its short-circuit and
+> measures the true UTF-8 byte count only on the rejection branch, so the accept path is unchanged.
+> One test was added despite "no new tests required" — findings #6 and #7 are untestable, but the
+> byte count is worth pinning; no existing assertion was touched (none asserted a number). Noted as
+> a follow-up candidate, **not** actioned: `Parse(Stream)` reports `limit + 1` because `ReadBounded`
+> stops there, so its number is an honest lower bound rather than the document's size — a different
+> defect from finding #5, and fixing it would defeat the bounded read.
 
 Three unrelated one-line items, grouped so they cost one branch rather than three. No behaviour
 change beyond the corrected diagnostic text; **no new tests required**.

@@ -135,9 +135,10 @@ IconGlyph addressBk = icons.GetGlyph("AddressBook", "bold");     // PascalCase i
 icons.TryGetGlyph("no-such-icon", null, out IconGlyph? missing); // false — a miss, no exception
 ```
 
-Lookup is case-insensitive and accepts kebab-case, `snake_case` or PascalCase. **A variant the set
-does not have is a miss, never a silent fallback** — asking for `heavy` throws
-`IconNotFoundException` rather than quietly handing back `regular`.
+Lookup is case-insensitive and accepts kebab-case, `snake_case` or PascalCase. The same applies to
+variant names, so `" Duotone "` resolves exactly as `"duotone"` does. **A variant the set does not
+have is a miss, never a silent fallback** — asking for `heavy` throws `IconNotFoundException` rather
+than quietly handing back `regular`.
 
 ### Loading, caching and thread safety
 
