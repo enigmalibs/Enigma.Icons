@@ -215,19 +215,19 @@ Do not add any property not listed. In particular `ImplicitUsings` is set **per 
        AvaloniaUI.DiagnosticsSupport is versioned independently of Avalonia but belongs to the
        same coupled set (dotnet-release). -->
   <ItemGroup>
-    <PackageVersion Include="Avalonia" Version="12.0.4" />
-    <PackageVersion Include="Avalonia.Desktop" Version="12.0.4" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.0.4" />
-    <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.0.4" />
-    <PackageVersion Include="Avalonia.Headless" Version="12.0.4" />
-    <PackageVersion Include="Avalonia.Headless.XUnit" Version="12.0.4" />
-    <PackageVersion Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.1" />
+    <PackageVersion Include="Avalonia" Version="12.1.0" />
+    <PackageVersion Include="Avalonia.Desktop" Version="12.1.0" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.1.0" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.1.0" />
+    <PackageVersion Include="Avalonia.Headless" Version="12.1.0" />
+    <PackageVersion Include="Avalonia.Headless.XUnit" Version="12.1.0" />
+    <PackageVersion Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3" />
   </ItemGroup>
 
   <!-- Gallery sample -->
   <ItemGroup>
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.10" />
   </ItemGroup>
 
   <!-- Tests -->
@@ -238,22 +238,25 @@ Do not add any property not listed. In particular `ImplicitUsings` is set **per 
 </Project>
 ```
 
-> **Verify at restore time, do not assume.** The versions above were checked against the local
-> NuGet cache and against `/home/jo/Dev/Draw`'s `Directory.Packages.props`:
+> **Verify at restore time, do not assume.** The block above records the pins as of the **1.0.0
+> release** (FEATURE-74DC), which moved the coupled Avalonia set 12.0.4 → 12.1.0,
+> `AvaloniaUI.DiagnosticsSupport` 2.2.1 → 2.2.3, and `Microsoft.Extensions.Hosting` 10.0.8 → 10.0.10.
+> All were verified by a green Release build and the full 434-test suite at that version.
 >
-> - `Avalonia`, `Avalonia.Desktop`, `Avalonia.Themes.Fluent`, `Avalonia.Fonts.Inter`,
->   `Avalonia.Headless` — **12.0.4 confirmed** available (Draw pins exactly this set at 12.0.4).
-> - `Avalonia.Headless.XUnit` — only **12.0.2** is present in the local cache, so 12.0.4 will be
->   fetched from nuget.org. **First restore must confirm it resolves.** If it does not, pin the
->   entire Avalonia group at **12.0.2**, which is verified present end-to-end. Either way the group
->   moves as a unit — never mix versions within it.
-> - `Avalonia.Headless.XUnit` 12.0.2's nuspec declares a dependency on
->   `xunit.v3.extensibility.core` **3.2.2** — Avalonia 12's headless test package is xUnit
->   **v3**-native, so there is no v2/v3 conflict. Re-verify this after any Avalonia bump.
+> - The Avalonia set **moves as a unit** — never mix versions within it. `Avalonia` is the only id of
+>   the group that ships in a package, so bumping it raises the published dependency floor for
+>   `Enigma.Icons.Avalonia` consumers: treat it as a compatibility decision, not housekeeping.
+> - `AvaloniaUI.DiagnosticsSupport` belongs to the coupled set but is versioned on its **own** line —
+>   it can never share the Avalonia version number.
+> - `Avalonia.Headless.XUnit` 12.1.0's nuspec declares a dependency on
+>   `xunit.v3.extensibility.core` **3.2.2** on both `net8.0` and `net10.0` — Avalonia 12's headless
+>   test package is xUnit **v3**-native, so there is no v2/v3 conflict. **Re-verify this after any
+>   Avalonia bump**; a v2-based headless package would break the whole Avalonia test project.
 > - **There is no `Avalonia.Diagnostics` for Avalonia 12** — its newest version is 11.3.12. The
->   Avalonia 12 replacement is `AvaloniaUI.DiagnosticsSupport` (2.2.1 in cache and in Draw). Do not
->   reintroduce the old id.
-> - `CommunityToolkit.Mvvm` 8.4.2 and `Microsoft.Extensions.Hosting` 10.0.8 match Draw and Carbon.
+>   Avalonia 12 replacement is `AvaloniaUI.DiagnosticsSupport`. Do not reintroduce the old id.
+> - `/home/jo/Dev/Draw` remains on Avalonia 12.0.4 / DiagnosticsSupport 2.2.1. It is a house
+>   reference point, **not** a constraint — this solution is deliberately ahead of it as of 1.0.0.
+> - `CommunityToolkit.Mvvm` 8.4.2 and `xunit.v3` 3.2.2 were already current at the 1.0.0 release.
 >
 > **A known house inconsistency, resolved here:** `Draw` uses the `xunit.v3.mtp-v2` 3.2.2
 > meta-package, while `Enigma.Logging` and the `xunit-v3` skill use `xunit.v3` 3.2.2. This solution

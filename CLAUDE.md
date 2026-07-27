@@ -48,7 +48,17 @@ The test runner is Microsoft.Testing.Platform, selected by `global.json` (SPEC �
 > As of FEATURE-469B the slnx holds **all eight** end-state projects (SPEC §3.4) — every path above
 > exists. `dotnet pack` applies to the three packable ones: `Enigma.Icons`, `Enigma.Icons.Phosphor`
 > and `Enigma.Icons.Avalonia`. FEATURE-718F has since written the four READMEs to their shipped
-> state; the one remaining 1.0.0 item, FEATURE-74DC, prepares the release and adds no projects.
+> state, and **FEATURE-74DC has completed 1.0.0 release preparation** — all three packages carry
+> `<Version>1.0.0</Version>` and `<PackageReleaseNotes>`, `RELEASENOTES.md` is filled, and the
+> pack/tag/push runbook lives in **`docs/RELEASE.md`**. The 1.0.0 line is therefore feature-complete;
+> the only remaining roadmap item, FEATURE-6FA1 (the WPF sibling), is **deferred post-1.0 and must
+> not be built**.
+
+**Releasing is the user's job, never the agent's.** `docs/RELEASE.md` is a runbook to *print and
+follow*, not to execute: the merge to `main`, `git tag`, the publish `dotnet pack` and
+`dotnet nuget push` are all outward-facing and belong to the user. The NuGet API key is a secret —
+never store, commit, or echo it. Note the repo currently has **no `git remote`**, so the publish path
+cannot run until one is added.
 
 Run the gallery — the sample app, and the only way to verify rendering by eye:
 

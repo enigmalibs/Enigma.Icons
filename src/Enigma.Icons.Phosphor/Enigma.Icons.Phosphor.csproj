@@ -13,6 +13,8 @@
     <Description>The Phosphor artwork as an interchangeable asset pack: 6 embedded resources, the 1,512-member PhosphorIcon enum, PhosphorWeight, PhosphorIconSet. Zero third-party dependencies.</Description>
     <PackageTags>enigma icons icon phosphor svg vector geometry icon-set dotnet netstandard zero-dependencies open-source</PackageTags>
 
+    <PackageReleaseNotes>Enigma.Icons.Phosphor 1.0.0 — initial release. The Phosphor artwork as an interchangeable asset pack: 1,512 icons in 6 weights (thin, light, regular, bold, fill and the new duotone), the strongly-typed PhosphorIcon enum, and PhosphorIconSet. Artwork is Phosphor Icons 2.1.1 (MIT, © 2020 Phosphor Icons). No third-party dependencies. See RELEASENOTES.md for the full details.</PackageReleaseNotes>
+
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <RepositoryUrl>https://github.com/josueclement/Enigma.Icons</RepositoryUrl>

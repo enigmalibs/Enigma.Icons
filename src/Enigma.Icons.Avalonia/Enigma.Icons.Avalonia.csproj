@@ -16,6 +16,8 @@
     <Description>Avalonia rendering for Enigma.Icons: IconGlyph to Geometry/Drawing/DrawingImage conversion, the Icon control whose Foreground inherits from its TextElement scope, and the IconGeometry/IconImage markup extensions. Works with any IIconSet, Phosphor included.</Description>
     <PackageTags>enigma icons icon avalonia avaloniaui phosphor svg vector geometry xaml markup-extension icon-set dotnet open-source</PackageTags>
 
+    <PackageReleaseNotes>Enigma.Icons.Avalonia 1.0.0 — initial release. Avalonia rendering for Enigma.Icons: the Icon control (no StyleInclude needed; inherits Foreground and follows theme switches), the {ei:IconGeometry} and {ei:IconImage} markup extensions, and Geometry / Drawing / DrawingImage conversion extensions. Supersedes the retired PhosphorIconsAvalonia package — new identity, no upgrade path. See RELEASENOTES.md for the full details.</PackageReleaseNotes>
+
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <RepositoryUrl>https://github.com/josueclement/Enigma.Icons</RepositoryUrl>

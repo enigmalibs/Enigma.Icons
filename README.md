@@ -9,6 +9,10 @@ at all**, and **`Enigma.Icons.Phosphor` has zero third-party dependencies**: it 
 package dependency, the sibling `Enigma.Icons`. All 1,512 Phosphor icons ship in all six weights,
 duotone included.
 
+> **What's new in 1.0** — first release of the Enigma.Icons umbrella — three sibling packages: the
+> framework-agnostic core, the Phosphor asset pack, and the Avalonia renderer. See the
+> [release notes](RELEASENOTES.md).
+
 ## Packages
 
 **[Enigma.Icons](src/Enigma.Icons/README.md)** — the icon model, the hardened SVG parser, the
