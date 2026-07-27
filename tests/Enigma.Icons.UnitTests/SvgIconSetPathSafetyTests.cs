@@ -83,4 +83,111 @@ public sealed class SvgIconSetPathSafetyTests
         Assert.DoesNotContain("secret", set.IconNames);
         Assert.DoesNotContain("escaped", set.Variants);
     }
+
+    [Fact]
+    public void FromDirectory_DoesNotFollowAFileSymlinkOutOfTheRoot()
+    {
+        using var root = new TempDirectory();
+        using var outside = new TempDirectory();
+
+        string secret = outside.WriteFile("secret.svg", SquareSvg);
+        root.WriteFile(Path.Combine("thin", "square.svg"), SquareSvg);
+
+        // Path.GetFullPath does not resolve symlinks, so this path is literally inside the root and
+        // passes IsWithin — only the ReparsePoint test stops it.
+        if (!TryCreateFileSymlink(Path.Combine(root.Path, "thin", "escaped.svg"), secret))
+        {
+            Assert.Skip("Creating a file symlink is not permitted in this environment.");
+            return;
+        }
+
+        SvgIconSet set = SvgIconSet.FromDirectory(root.Path);
+
+        Assert.Equal(new[] { "square" }, set.IconNames.ToArray());
+        Assert.False(set.TryGetGlyph("escaped", "thin", out IconGlyph? glyph));
+        Assert.Null(glyph);
+    }
+
+    [Fact]
+    public void FromDirectory_DoesNotFollowAFileSymlinkWhenVariantsAreOff()
+    {
+        using var root = new TempDirectory();
+        using var outside = new TempDirectory();
+
+        string secret = outside.WriteFile("secret.svg", SquareSvg);
+        root.WriteFile("square.svg", SquareSvg);
+
+        if (!TryCreateFileSymlink(Path.Combine(root.Path, "escaped.svg"), secret))
+        {
+            Assert.Skip("Creating a file symlink is not permitted in this environment.");
+            return;
+        }
+
+        SvgIconSet set = SvgIconSet.FromDirectory(root.Path, variantsFromSubfolders: false);
+
+        Assert.Equal(new[] { "square" }, set.IconNames.ToArray());
+        Assert.False(set.TryGetGlyph("escaped", null, out _));
+    }
+
+    [Fact]
+    public void FromDirectory_DoesNotFollowAFileSymlinkToANonSvgTarget()
+    {
+        using var root = new TempDirectory();
+        using var outside = new TempDirectory();
+
+        // The pre-fix behaviour read the target and surfaced it as an SvgParseException on first
+        // lookup; now the entry never enters the index at all.
+        string plain = outside.WriteFile("hosts", "127.0.0.1 localhost\n");
+        root.WriteFile("square.svg", SquareSvg);
+
+        if (!TryCreateFileSymlink(Path.Combine(root.Path, "escaped.svg"), plain))
+        {
+            Assert.Skip("Creating a file symlink is not permitted in this environment.");
+            return;
+        }
+
+        SvgIconSet set = SvgIconSet.FromDirectory(root.Path, variantsFromSubfolders: false);
+
+        Assert.DoesNotContain("escaped", set.IconNames);
+        Assert.False(set.TryGetGlyph("escaped", null, out _));
+    }
+
+    [Fact]
+    public void FromDirectory_SkipsASymlinkedFileThatPointsInsideTheRoot()
+    {
+        using var root = new TempDirectory();
+
+        string square = root.WriteFile("square.svg", SquareSvg);
+
+        // A symlink is skipped on the attribute, not on where it leads: resolving the target to
+        // decide would need FileSystemInfo.LinkTarget, which is .NET 6+ and netstandard2.0 is in
+        // the TFM set.
+        if (!TryCreateFileSymlink(Path.Combine(root.Path, "alias.svg"), square))
+        {
+            Assert.Skip("Creating a file symlink is not permitted in this environment.");
+            return;
+        }
+
+        SvgIconSet set = SvgIconSet.FromDirectory(root.Path, variantsFromSubfolders: false);
+
+        Assert.Equal(new[] { "square" }, set.IconNames.ToArray());
+        Assert.NotNull(set.GetGlyph("square"));
+    }
+
+    /// <summary>
+    /// Creates a file symlink, reporting false instead of throwing where the platform does not allow
+    /// it — on Windows this needs elevation or Developer Mode.
+    /// </summary>
+    private static bool TryCreateFileSymlink(string link, string target)
+    {
+        try
+        {
+            File.CreateSymbolicLink(link, target);
+            return true;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or PlatformNotSupportedException)
+        {
+            return false;
+        }
+    }
 }

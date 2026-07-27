@@ -213,7 +213,14 @@ the "a variant the set does not have is a miss, never a fallback" rule.
 
 ## PHASE03 — [Low] `SvgIconSet.FromDirectory` follows symlinked `.svg` files out of its root
 
-**Status:** TODO · Branch `review/code-review-1fd4-phase03-symlinked-files`
+**Status:** DONE · Branch `review/code-review-1fd4-phase03-symlinked-files` ·
+Completion record `docs/done/CODE-REVIEW-1FD4-PHASE03.md`
+
+> **Outcome:** all three design steps implemented as written. The `ReparsePoint` test runs **before**
+> `PathSafety.IsWithin`, since it is the mechanism that actually stops a symlinked file. Because the
+> skip is on the attribute and not on the link target (`FileSystemInfo.LinkTarget` is .NET 6+), a
+> symlink pointing *inside* the root is skipped too — deliberate, documented, and pinned by a fourth
+> test beyond the plan's criteria. The four new tests were verified to fail with the guard removed.
 
 **Location:** `src/Enigma.Icons/SvgIconSet.cs:465-508` (`AddDirectoryFiles`), against the guarantee in
 its own `<remarks>` at `SvgIconSet.cs:97-101`

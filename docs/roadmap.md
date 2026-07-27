@@ -21,7 +21,7 @@ Row order is the intended build order — `/build` surfaces the topmost `TODO` f
 | CODE-REVIEW-1FD4 | Post-1.0 review fixes (6 accepted findings, 4 phases)                    | IN PROGRESS | docs/plan/CODE-REVIEW-1FD4.md |
 | - PHASE01    | [Medium] Icon.Render re-parses geometry every render pass                    | DONE   | (in CODE-REVIEW-1FD4.md)  |
 | - PHASE02    | [Medium] PhosphorIconSet variant lookup diverges from the IIconSet contract  | DONE   | (in CODE-REVIEW-1FD4.md)  |
-| - PHASE03    | [Low] SvgIconSet.FromDirectory follows symlinked .svg files out of its root  | TODO   | (in CODE-REVIEW-1FD4.md)  |
+| - PHASE03    | [Low] SvgIconSet.FromDirectory follows symlinked .svg files out of its root  | DONE   | (in CODE-REVIEW-1FD4.md)  |
 | - PHASE04    | [Low] Documentation and cosmetic sweep (byte count, IconNames doc, Array.Empty) | TODO | (in CODE-REVIEW-1FD4.md) |
 | FEATURE-1608 | docs/internals.html — maintainer's how-it-works explainer                    | TODO   | docs/plan/FEATURE-1608.md |
 

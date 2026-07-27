@@ -657,8 +657,11 @@ Behaviour:
   — so `bold/acorn-bold.svg` and `bold/acorn.svg` both yield the icon `acorn` in variant `bold`.
   This is what makes an extracted Phosphor tree work with `FromDirectory` out of the box.
 - **Path safety:** `FromDirectory` resolves the root with `Path.GetFullPath`, enumerates only within
-  it, does not follow directory symlinks out of the root, and rejects any resolved file path that
-  does not start with the resolved root — no traversal via a crafted subdirectory name.
+  it, skips symlinked variant subdirectories **and** symlinked `.svg` files (`Path.GetFullPath` does
+  not resolve a symlink, so a link inside the root would otherwise be read), and rejects any resolved
+  file path that does not start with the resolved root — no traversal via a crafted subdirectory name.
+  A skipped entry is dropped silently, so one hostile entry cannot deny service on an otherwise valid
+  directory.
 - A directory that does not exist throws `DirectoryNotFoundException` at construction. A file that
   disappears between construction and first parse surfaces as `SvgParseException` wrapping the I/O
   error.
