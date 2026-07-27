@@ -18,8 +18,22 @@ Row order is the intended build order — `/build` surfaces the topmost `TODO` f
 | FEATURE-718F | Documentation (root + 3 packed READMEs)                                      | DONE   | docs/plan/FEATURE-718F.md |
 | FEATURE-74DC | Release preparation & NuGet publish runbook (v1.0.0 ×3)                      | DONE   | docs/plan/FEATURE-74DC.md |
 | FEATURE-6FA1 | Enigma.Icons.Wpf renderer package — **DEFERRED post-1.0, do not build yet**   | TODO   | docs/plan/FEATURE-6FA1.md |
+| CODE-REVIEW-1FD4 | Post-1.0 review fixes (6 accepted findings, 4 phases)                    | TODO   | docs/plan/CODE-REVIEW-1FD4.md |
+| - PHASE01    | [Medium] Icon.Render re-parses geometry every render pass                    | TODO   | (in CODE-REVIEW-1FD4.md)  |
+| - PHASE02    | [Medium] PhosphorIconSet variant lookup diverges from the IIconSet contract  | TODO   | (in CODE-REVIEW-1FD4.md)  |
+| - PHASE03    | [Low] SvgIconSet.FromDirectory follows symlinked .svg files out of its root  | TODO   | (in CODE-REVIEW-1FD4.md)  |
+| - PHASE04    | [Low] Documentation and cosmetic sweep (byte count, IconNames doc, Array.Empty) | TODO | (in CODE-REVIEW-1FD4.md) |
+| FEATURE-1608 | docs/internals.html — maintainer's how-it-works explainer                    | TODO   | docs/plan/FEATURE-1608.md |
 
-All items are single-phase `FEATURE`s — no phase rows.
+`FEATURE-21C4` … `FEATURE-6FA1` are single-phase `FEATURE`s — no phase rows. `CODE-REVIEW-1FD4` is
+multi-phase: one phase per accepted review finding, ordered highest-severity first.
+
+> **`CODE-REVIEW-1FD4` and `FEATURE-1608` are post-1.0 items, planned 2026-07-27.** They come after
+> the deferred `FEATURE-6FA1` in row order but are **buildable now** — 6FA1 is the one row `/build`
+> must skip. Neither changes a package version: the review fixes fold into the **unpublished** 1.0.0
+> (no git remote, nothing on nuget.org), so `RELEASENOTES.md`, `PackageReleaseNotes` and the root
+> README callout stay exactly as `FEATURE-74DC` wrote them, and the stale `artifacts/*.nupkg` are
+> simply re-packed at publish time per `docs/RELEASE.md`.
 
 > **`FEATURE-6FA1` is not buildable work in this line.** It is a placeholder plan recording decisions
 > already made for a future WPF sibling (SPEC §17). `/build` must **skip** it: it is not part of the
