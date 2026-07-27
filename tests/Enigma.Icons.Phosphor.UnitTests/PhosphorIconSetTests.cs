@@ -120,10 +120,25 @@ public sealed class PhosphorIconSetTests
     }
 
     [Theory]
+    [InlineData(" duotone")]
+    [InlineData("duotone ")]
+    [InlineData(" Duotone ")]
+    [InlineData("\tDUOTONE\t")]
+    public void VariantLookup_NormalizesTheSameWayAnIconNameDoes(string variant)
+    {
+        // CODE-REVIEW-1FD4 PHASE02: IIconSet documents one normalization rule for names AND
+        // variants. Before this phase the variant was a bare dictionary probe on the raw string, so
+        // every spelling below missed here and hit on the equivalent SvgIconSet.
+        Assert.Same(Set.GetGlyph(PhosphorIcon.Acorn, PhosphorWeight.Duotone), Set.GetGlyph("acorn", variant));
+    }
+
+    [Theory]
     [InlineData("heavy")]
     [InlineData("outline")]
     [InlineData("")]
-    [InlineData("regular ")]
+    [InlineData("   ")]
+    [InlineData("duo-tone")]
+    [InlineData("DuoTone")]
     public void AVariantTheSetLacks_IsAMissAndNeverFallsBackToRegular(string variant)
     {
         Assert.False(Set.TryGetGlyph("acorn", variant, out IconGlyph? glyph));

@@ -150,7 +150,14 @@ and its glyphs be collected normally.
 
 ## PHASE02 — [Medium] `PhosphorIconSet` variant lookup diverges from the `IIconSet` contract
 
-**Status:** TODO · Branch `review/code-review-1fd4-phase02-variant-parity`
+**Status:** DONE · Branch `review/code-review-1fd4-phase02-variant-parity` ·
+Completion record `docs/done/CODE-REVIEW-1FD4-PHASE02.md`
+
+> **Outcome:** the **preferred** option was taken — `<InternalsVisibleTo Include="Enigma.Icons.Phosphor" />`
+> on `Enigma.Icons`, so `TryResolveWeight` calls the one `IconNameNormalizer` rather than forking the
+> rule. One existing assertion had to move: `PhosphorIconSetTests` pinned `"regular "` (trailing
+> space) as a **miss**, which is exactly the behaviour this phase corrects — it was replaced by
+> spellings that still miss after normalization (`"   "`, `"duo-tone"`, `"DuoTone"`).
 
 **Location:** `src/Enigma.Icons.Phosphor/PhosphorIconSet.cs:239-248` (`TryResolveWeight`), against
 `src/Enigma.Icons/IIconSet.cs:13-15` and `src/Enigma.Icons/SvgIconSet.cs:371-385`
