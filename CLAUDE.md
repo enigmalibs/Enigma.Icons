@@ -51,10 +51,12 @@ The test runner is Microsoft.Testing.Platform, selected by `global.json` (SPEC �
 > state, and **FEATURE-74DC has completed 1.0.0 release preparation** — all three packages carry
 > `<Version>1.0.0</Version>` and `<PackageReleaseNotes>`, `RELEASENOTES.md` is filled, and the
 > pack/tag/push runbook lives in **`docs/RELEASE.md`**. The 1.0.0 line is therefore feature-complete.
-> Two post-1.0 items were planned on 2026-07-27 and **are buildable**: `CODE-REVIEW-1FD4` (review
-> fixes, 4 phases) and `FEATURE-1608` (`docs/internals.html`). Neither bumps a version — 1.0.0 was
-> never published, so they fold into it. FEATURE-6FA1 (the WPF sibling) is the one roadmap row
-> `/build` must **skip**: it is **deferred post-1.0 and must not be built**.
+> Two post-1.0 items were planned on 2026-07-27; neither bumps a version — 1.0.0 was never
+> published, so they fold into it. **`CODE-REVIEW-1FD4` (review fixes) is `DONE`** — all four phases
+> landed, and its completion docs record the two findings deliberately left as-is, so do not
+> re-raise them. `FEATURE-1608` (`docs/internals.html`) is the one remaining buildable item.
+> FEATURE-6FA1 (the WPF sibling) is the one roadmap row `/build` must **skip**: it is **deferred
+> post-1.0 and must not be built**.
 
 **Releasing is the user's job, never the agent's.** `docs/RELEASE.md` is a runbook to *print and
 follow*, not to execute: the merge to `main`, `git tag`, the publish `dotnet pack` and

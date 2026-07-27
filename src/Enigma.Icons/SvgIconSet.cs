@@ -29,7 +29,7 @@ public sealed class SvgIconSet : IIconSet
     private const string FallbackSetName = "SvgIcons";
 
     private static readonly ReadOnlyCollection<string> _noVariants =
-        new ReadOnlyCollection<string>(new string[0]);
+        new ReadOnlyCollection<string>(Array.Empty<string>());
 
     private readonly Dictionary<string, Dictionary<string, SvgSource>> _index;
     private readonly ConcurrentDictionary<(string Variant, string Name), Lazy<IconGlyph>> _cache =
@@ -73,6 +73,14 @@ public sealed class SvgIconSet : IIconSet
     public string? DefaultVariant { get; }
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// The <b>union</b> of the icon names of every variant. A listed name is therefore not
+    /// guaranteed to resolve in every variant — including <see cref="DefaultVariant"/>: a tree
+    /// missing one icon in one variant still lists that name, and
+    /// <see cref="TryGetGlyph(string, string?, out IconGlyph?)"/> returns false for the variants
+    /// that do not have it. The property answers "what icons does this set know about", not "what
+    /// resolves in the default variant".
+    /// </remarks>
     public IEnumerable<string> IconNames { get; }
 
     /// <summary>Icons from a directory of .svg files.</summary>

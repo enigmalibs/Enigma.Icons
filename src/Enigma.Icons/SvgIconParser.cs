@@ -81,8 +81,15 @@ public static class SvgIconParser
         int limit = MaxDocumentBytes;
 
         // A UTF-8 byte count is always >= the UTF-16 code-unit count, so a string longer than the
-        // limit is over it without measuring; otherwise take the exact count.
-        int size = svg.Length > limit ? svg.Length : Encoding.UTF8.GetByteCount(svg);
+        // limit is over it without measuring — the accept path never pays for the exact count.
+        if (svg.Length > limit)
+        {
+            // svg.Length is a code-unit count, not a byte count, and understates the true size of
+            // any non-ASCII document. Measure here: the exact size is only needed for the message.
+            throw TooLarge(Encoding.UTF8.GetByteCount(svg), limit);
+        }
+
+        int size = Encoding.UTF8.GetByteCount(svg);
         if (size > limit)
         {
             throw TooLarge(size, limit);

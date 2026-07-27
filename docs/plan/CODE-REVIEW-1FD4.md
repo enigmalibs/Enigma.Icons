@@ -1,4 +1,4 @@
-**Status:** IN PROGRESS · Multi-phase (4 phases) · Branches `review/code-review-1fd4-phaseNN-<slug>`
+**Status:** DONE · Multi-phase (4 phases, all complete) · Branches `review/code-review-1fd4-phaseNN-<slug>`
 
 # CODE-REVIEW-1FD4 — Post-1.0 review fixes
 
@@ -271,7 +271,16 @@ mechanism that stops traversal.
 
 ## PHASE04 — [Low] Documentation and cosmetic sweep
 
-**Status:** TODO · Branch `review/code-review-1fd4-phase04-doc-cosmetic-sweep`
+**Status:** DONE · Branch `review/code-review-1fd4-phase04-doc-cosmetic-sweep` ·
+Completion record `docs/done/CODE-REVIEW-1FD4-PHASE04.md`
+
+> **Outcome:** all three findings fixed as written. The size gate keeps its short-circuit and
+> measures the true UTF-8 byte count only on the rejection branch, so the accept path is unchanged.
+> One test was added despite "no new tests required" — findings #6 and #7 are untestable, but the
+> byte count is worth pinning; no existing assertion was touched (none asserted a number). Noted as
+> a follow-up candidate, **not** actioned: `Parse(Stream)` reports `limit + 1` because `ReadBounded`
+> stops there, so its number is an honest lower bound rather than the document's size — a different
+> defect from finding #5, and fixing it would defeat the bounded read.
 
 Three unrelated one-line items, grouped so they cost one branch rather than three. No behaviour
 change beyond the corrected diagnostic text; **no new tests required**.
