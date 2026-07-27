@@ -1,4 +1,4 @@
-**Status:** TODO · Single-phase · Suggested build branch `feature/feature-718f-documentation`
+**Status:** DONE · Single-phase · Built on branch `feature/feature-718f-documentation`
 
 # FEATURE-718F — Documentation (root + 3 packed READMEs)
 
@@ -330,66 +330,66 @@ builds clean and the whole suite still passes, and every README code sample is v
 shipped signatures"* — the build/test criteria below are regression checks, not new work. Criteria
 3–5 apply normally.
 
-- [ ] Root `README.md` is a complete landing page: title + intro (umbrella, three packages, what
+- [x] Root `README.md` is a complete landing page: title + intro (umbrella, three packages, what
       each is for), the three packages one line each **with the SPEC §13.1 NuGet + MIT badge pair**
       (root README only; no packed README carries a badge), when-to-use-which guidance, and the MIT
       licence link.
-- [ ] Root quick start shows **both** paths: XAML (the single
+- [x] Root quick start shows **both** paths: XAML (the single
       `xmlns:ei="https://github.com/josueclement/Enigma.Icons"` declaration, `ei:Icon`, and **both**
       markup extensions under that one prefix) and C#
       (`PhosphorIconSet.Instance.GetGlyph(...).ToGeometry()`).
-- [ ] Root README carries a **single** supported-target-frameworks table — this item's sole section
+- [x] Root README carries a **single** supported-target-frameworks table — this item's sole section
       (SPEC §13.2) — whose three rows match the three packable csprojs' `<TargetFrameworks>` values,
       plus the SPEC §14.2 Phosphor credit line **verbatim**.
-- [ ] Root README embeds the gallery screenshot from **`docs/img/gallery.png`** (SPEC §1, §13) with
+- [x] Root README embeds the gallery screenshot from **`docs/img/gallery.png`** (SPEC §1, §13) with
       alt text, the one-line gallery description, and the `dotnet run` command. Only if
       `docs/done/FEATURE-469B.md` records that no capture was produced does the section fall back to
       the prose description plus the run command, with the missing capture logged as a follow-up —
       either way no broken image link ships.
-- [ ] The three forward links FEATURE-21C4 left (`src/*/README.md`) resolve to the real files; the
+- [x] The three forward links FEATURE-21C4 left (`src/*/README.md`) resolve to the real files; the
       root README contains no unresolved forward reference and no version number or what's-new
       callout (74DC's, and **root README only** — no packed README carries one, SPEC §13.2). In each
       packed README, `LICENSE.md` (plus `THIRD-PARTY-NOTICES.md` in the Phosphor package) is linked
       **relatively** because it is packed alongside, while every unpacked target (`RELEASENOTES.md`,
       `docs/**`, `samples/**`, sibling package READMEs) is **absolute** against
       `https://github.com/josueclement/Enigma.Icons` — the exact state FEATURE-74DC's D6a audits.
-- [ ] `src/Enigma.Icons/README.md` documents the model, `IIconSet` (including *variant miss, never a
+- [x] `src/Enigma.Icons/README.md` documents the model, `IIconSet` (including *variant miss, never a
       silent fallback*), the parser's supported subset **and** the SPEC §5.1 exclusions named
       explicitly with the `Avalonia.Svg` / `Svg.Skia` pointer, and a worked
       `SvgIconSet.FromDirectory` bring-your-own-SVG example.
-- [ ] `src/Enigma.Icons.Phosphor/README.md` documents the six weights with a visual sense of the
+- [x] `src/Enigma.Icons.Phosphor/README.md` documents the six weights with a visual sense of the
       difference (incl. duotone's 20 %-opacity backing layer), `PhosphorIcon` +
       `PhosphorIconNames`, `PhosphorIconSet` (typed and string surfaces, caching, thread safety),
       the credit line + `THIRD-PARTY-NOTICES.md` pointer, and the artwork-refresh procedure pointing
       at `docs/reference/phosphor/README.md` and the SPEC §8.1 generator invocation — and carries
       **no byte figure and no size-reduction claim** (SPEC §7.3: the format saves no package size).
-- [ ] `src/Enigma.Icons.Phosphor/README.md` carries the **enum-ordinal caveat** mandated by
+- [x] `src/Enigma.Icons.Phosphor/README.md` carries the **enum-ordinal caveat** mandated by
       SPEC §8.4: `PhosphorIcon` ordinals are positional and shift on an artwork refresh — **never
       persist the numeric value**; persist `PhosphorIconNames.ToKebabCase(icon)` and read it back with
       `TryParse`; and an artwork refresh is at least a minor version bump for this package.
-- [ ] `src/Enigma.Icons.Avalonia/README.md` documents the XAML quick start, the **no
+- [x] `src/Enigma.Icons.Avalonia/README.md` documents the XAML quick start, the **no
       `<StyleInclude>` needed** note with its reason, `Icon` vs the markup extensions **with the
       load-time-evaluation reason the control is the one that follows bound/themed brushes**
       (SPEC §10.2), the `ToGeometry` opacity-loss caveat (SPEC §10.1), and that the extension methods
       work with any `IIconSet`.
-- [ ] **Every code sample is verified against the shipped signatures, not written from memory:** the
+- [x] **Every code sample is verified against the shipped signatures, not written from memory:** the
       C# samples compile in a throwaway scratchpad project referencing the three `src` projects, and
       the XAML samples match the shipped control/extension surface (cross-checked against the
       gallery `.axaml`). Evidence recorded in the completion doc.
-- [ ] Nothing documented that is not shipped, and nothing contradicting SPEC; the only forward-
+- [x] Nothing documented that is not shipped, and nothing contradicting SPEC; the only forward-
       looking statement is the single "WPF sibling is post-1.0" line (SPEC §17).
-- [ ] `dotnet pack -c Release` for each of the three `src` projects yields a nupkg containing
+- [x] `dotnet pack -c Release` for each of the three `src` projects yields a nupkg containing
       `README.md` at its root and `LICENSE.md`, with `THIRD-PARTY-NOTICES.md` in
       `Enigma.Icons.Phosphor` only (SPEC §14).
-- [ ] All four READMEs are LF with a final newline; `Enigma.Icons.slnx` is unchanged (zero
+- [x] All four READMEs are LF with a final newline; `Enigma.Icons.slnx` is unchanged (zero
       `<Project>` entries appended, SPEC §3.4); no `.cs`/`.axaml` file is modified.
-- [ ] **`dotnet build Enigma.Icons.slnx` succeeds with zero warnings** (`TreatWarningsAsErrors`,
+- [x] **`dotnet build Enigma.Icons.slnx` succeeds with zero warnings** (`TreatWarningsAsErrors`,
       SPEC §2) — unchanged from FEATURE-469B, captured as regression evidence.
-- [ ] **`dotnet test Enigma.Icons.slnx` — the whole suite green**, no test added or removed by this
+- [x] **`dotnet test Enigma.Icons.slnx` — the whole suite green**, no test added or removed by this
       item.
-- [ ] **Roadmap + this plan flipped to `DONE`** (`docs/roadmap.md` FEATURE-718F row; this file's
+- [x] **Roadmap + this plan flipped to `DONE`** (`docs/roadmap.md` FEATURE-718F row; this file's
       status header). (DoD criterion 4.)
-- [ ] **Completion doc `docs/done/FEATURE-718F.md` written** — summary, files touched, deviations,
+- [x] **Completion doc `docs/done/FEATURE-718F.md` written** — summary, files touched, deviations,
       build/test evidence. (DoD criterion 5.)
 
 ## Notes / risks

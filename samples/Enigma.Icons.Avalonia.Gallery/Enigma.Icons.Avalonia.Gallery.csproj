@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Shared settings (LangVersion, Nullable, TreatWarningsAsErrors, EnforceCodeStyleInBuild,
+       Authors, Copyright) are inherited from Directory.Build.props — SPEC §3.2. -->
+  <PropertyGroup>
+    <!-- WinExe suppresses the console window on Windows; inert on Linux. -->
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+
+    <!-- SPEC §1/§11: the gallery is the visual verification, never a shipped artifact. Nothing
+         packable references it. -->
+    <IsPackable>false</IsPackable>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+
+    <!-- Compiled bindings. Avalonia 12.0.4's AvaloniaBuildTasks.targets defaults
+         AvaloniaUseCompiledBindingsByDefault to FALSE and passes it straight to the XAML compiler
+         as DefaultCompileBindings, so x:DataType would be decorative and every binding here would
+         silently fall back to reflection. Turning it on is what makes the compiler verify each
+         binding path against its x:DataType at build time. -->
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+
+    <!-- Deliberately NOT set (SPEC §2.8, §10.4): GenerateDocumentationFile — the CS1591 rule exists
+         to cover packed API surface and this project packs nothing; IsTrimmable/IsAotCompatible —
+         scoped to the three packages. -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- No Version= anywhere — Central Package Management (SPEC §2.5, §3.3). -->
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Avalonia.Desktop" />
+    <PackageReference Include="Avalonia.Themes.Fluent" />
+    <PackageReference Include="Avalonia.Fonts.Inter" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+
+    <!-- Debug-only developer tools (SPEC §11). There is no Avalonia.Diagnostics release for
+         Avalonia 12 — its newest is 11.3.12 — so AvaloniaUI.DiagnosticsSupport is the only option,
+         and .WithDeveloperTools() replaces the v11 this.AttachDevTools(). The asset conditions,
+         rather than a Condition on the PackageReference itself, keep the restore graph identical
+         across configurations while still shipping nothing in Release. -->
+    <PackageReference Include="AvaloniaUI.DiagnosticsSupport">
+      <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+      <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Enigma.Icons.Phosphor and Enigma.Icons arrive transitively (SPEC §10). The multi-targeted
+         library resolves to its net10.0 TFM here. -->
+    <ProjectReference Include="..\..\src\Enigma.Icons.Avalonia\Enigma.Icons.Avalonia.csproj" />
+  </ItemGroup>
+
+  <!-- No <AvaloniaXaml>/<AvaloniaResource> item groups: .axaml files are auto-included by the
+       Avalonia build targets, and this sample deliberately ships no art assets (no application
+       icon — SPEC §1/§11 call for none and the repo tracks none). -->
+
+</Project>

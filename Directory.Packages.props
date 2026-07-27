@@ -5,23 +5,27 @@
   </PropertyGroup>
 
   <!-- Avalonia ecosystem — version-coupled, ALWAYS bumped together, never individually.
-       Version aligned with /home/jo/Dev/Draw, the house's current Avalonia 12 project.
+       Bumped 12.0.4 -> 12.1.0 for the 1.0.0 release (FEATURE-74DC). This is the published dependency
+       floor for Enigma.Icons.Avalonia consumers, so a bump here is a compatibility decision, not
+       housekeeping. Note the set no longer matches /home/jo/Dev/Draw, which is still on 12.0.4 —
+       Draw is a reference point, not a constraint.
        AvaloniaUI.DiagnosticsSupport is versioned independently of Avalonia but belongs to the
-       same coupled set (dotnet-release). -->
+       same coupled set (dotnet-release). There is no Avalonia.Diagnostics for Avalonia 12; never
+       reintroduce that id. -->
   <ItemGroup>
-    <PackageVersion Include="Avalonia" Version="12.0.4" />
-    <PackageVersion Include="Avalonia.Desktop" Version="12.0.4" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.0.4" />
-    <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.0.4" />
-    <PackageVersion Include="Avalonia.Headless" Version="12.0.4" />
-    <PackageVersion Include="Avalonia.Headless.XUnit" Version="12.0.4" />
-    <PackageVersion Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.1" />
+    <PackageVersion Include="Avalonia" Version="12.1.0" />
+    <PackageVersion Include="Avalonia.Desktop" Version="12.1.0" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.1.0" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.1.0" />
+    <PackageVersion Include="Avalonia.Headless" Version="12.1.0" />
+    <PackageVersion Include="Avalonia.Headless.XUnit" Version="12.1.0" />
+    <PackageVersion Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3" />
   </ItemGroup>
 
   <!-- Gallery sample -->
   <ItemGroup>
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.10" />
   </ItemGroup>
 
   <!-- Tests -->

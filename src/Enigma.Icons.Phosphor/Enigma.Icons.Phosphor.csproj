@@ -1,0 +1,73 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Shared settings (LangVersion, Nullable, TreatWarningsAsErrors, EnforceCodeStyleInBuild,
+       Authors, Copyright) are inherited from Directory.Build.props — SPEC §3.2. -->
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFrameworks>netstandard2.0;net8.0;net10.0</TargetFrameworks>
+    <ImplicitUsings>disable</ImplicitUsings>
+
+    <PackageId>Enigma.Icons.Phosphor</PackageId>
+    <Title>Enigma.Icons.Phosphor — the Phosphor artwork as an asset pack</Title>
+    <Version>1.0.0</Version>
+    <Description>The Phosphor artwork as an interchangeable asset pack: 6 embedded resources, the 1,512-member PhosphorIcon enum, PhosphorWeight, PhosphorIconSet. Zero third-party dependencies.</Description>
+    <PackageTags>enigma icons icon phosphor svg vector geometry icon-set dotnet netstandard zero-dependencies open-source</PackageTags>
+
+    <PackageReleaseNotes>Enigma.Icons.Phosphor 1.0.0 — initial release. The Phosphor artwork as an interchangeable asset pack: 1,512 icons in 6 weights (thin, light, regular, bold, fill and the new duotone), the strongly-typed PhosphorIcon enum, and PhosphorIconSet. Artwork is Phosphor Icons 2.1.1 (MIT, © 2020 Phosphor Icons). No third-party dependencies. See RELEASENOTES.md for the full details.</PackageReleaseNotes>
+
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/josueclement/Enigma.Icons</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/josueclement/Enigma.Icons</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!-- RootNamespace is deliberately NOT set. The manifest resource names SPEC §7.1 fixes
+       (Enigma.Icons.Phosphor.Assets.phosphor.<weight>.dat) are synthesized from the default root
+       namespace — which equals the project name — plus the Assets folder and the file name. An
+       override here would silently rename every resource and break every lookup at runtime while
+       the build stays green. ResourceManifestTests asserts the six names for exactly that reason. -->
+
+  <!-- SPEC §10.4: trim/AOT annotations only on the modern TFMs — netstandard2.0 supports neither. -->
+  <PropertyGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
+    <IsTrimmable>true</IsTrimmable>
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <!-- SPEC §7.1: the six generated weight tables, written by tools/Enigma.Icons.Generator and
+       committed as-is. Never hand-edited — a change means re-running the generator (SPEC §8.1). -->
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\phosphor.*.dat" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\LICENSE.md" Pack="true" PackagePath="\" />
+    <!-- A licence obligation, not a courtesy, and the reason this file is packed HERE and nowhere
+         else (SPEC §14.2): the embedded .dat resources ARE the Phosphor artwork, so Phosphor's MIT
+         copyright and permission notice must travel with any package carrying a substantial portion
+         of it. Enigma.Icons and Enigma.Icons.Avalonia ship no artwork and do not pack this file. -->
+    <None Include="..\..\THIRD-PARTY-NOTICES.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Enigma.Icons\Enigma.Icons.csproj" />
+  </ItemGroup>
+
+  <!-- Lets the unit tests drive the .dat reader over synthetic streams — a corrupt header cannot be
+       reproduced through the six real, valid resources. Adds nothing to the public API. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="Enigma.Icons.Phosphor.UnitTests" />
+  </ItemGroup>
+
+  <!-- SPEC §2.10: this project has ZERO PackageReference entries, on every TFM. That is a hard
+       constraint, not a preference — the sibling Enigma.Icons ProjectReference above is a family
+       reference, not a third-party dependency. Everything else it needs
+       (System.Collections.Concurrent, System.IO, System.Globalization, System.Text) is inside the
+       netstandard2.0 reference set; a polyfill such as System.Memory or Microsoft.Bcl.* would need
+       a concrete compile error and a justification here (SPEC §3.3). -->
+
+</Project>

@@ -1,0 +1,17 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Enigma.Icons.Avalonia.Gallery.App"
+             RequestedThemeVariant="Default">
+
+  <!-- Default: the app follows the OS light/dark preference, which is what makes the two
+       no-Foreground icons in the header prove that Icon.Foreground follows a theme switch.
+
+       There is deliberately NO StyleInclude for Enigma.Icons.Avalonia. Icon derives from Control,
+       not TemplatedControl, so the package ships no XAML and declares no theme resources — a
+       consumer adds nothing to App.axaml (SPEC §10.2). This file demonstrating that is part of the
+       point of the sample. -->
+  <Application.Styles>
+    <FluentTheme />
+  </Application.Styles>
+
+</Application>
