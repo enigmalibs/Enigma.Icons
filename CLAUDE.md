@@ -47,8 +47,8 @@ The test runner is Microsoft.Testing.Platform, selected by `global.json` (SPEC �
 
 > As of FEATURE-469B the slnx holds **all eight** end-state projects (SPEC §3.4) — every path above
 > exists. `dotnet pack` applies to the three packable ones: `Enigma.Icons`, `Enigma.Icons.Phosphor`
-> and `Enigma.Icons.Avalonia`. The two remaining 1.0.0 items add no projects: FEATURE-718F writes the
-> READMEs, FEATURE-74DC prepares the release.
+> and `Enigma.Icons.Avalonia`. FEATURE-718F has since written the four READMEs to their shipped
+> state; the one remaining 1.0.0 item, FEATURE-74DC, prepares the release and adds no projects.
 
 Run the gallery — the sample app, and the only way to verify rendering by eye:
 

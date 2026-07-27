@@ -15,7 +15,7 @@ Row order is the intended build order — `/build` surfaces the topmost `TODO` f
 | FEATURE-3950 | Enigma.Icons.Phosphor package + UnitTests (full-corpus integrity)             | DONE   | docs/plan/FEATURE-3950.md |
 | FEATURE-3ADD | Enigma.Icons.Avalonia (extensions, markup extensions, Icon control) + UnitTests | DONE   | docs/plan/FEATURE-3ADD.md |
 | FEATURE-469B | Icon gallery sample app                                                      | DONE   | docs/plan/FEATURE-469B.md |
-| FEATURE-718F | Documentation (root + 3 packed READMEs)                                      | TODO   | docs/plan/FEATURE-718F.md |
+| FEATURE-718F | Documentation (root + 3 packed READMEs)                                      | DONE   | docs/plan/FEATURE-718F.md |
 | FEATURE-74DC | Release preparation & NuGet publish runbook (v1.0.0 ×3)                      | TODO   | docs/plan/FEATURE-74DC.md |
 | FEATURE-6FA1 | Enigma.Icons.Wpf renderer package — **DEFERRED post-1.0, do not build yet**   | TODO   | docs/plan/FEATURE-6FA1.md |
 
