@@ -39,6 +39,12 @@ namespace Enigma.Icons.Avalonia;
 /// icon set that misbehaves all paint nothing. A throwing render pass takes down the Avalonia XAML
 /// previewer for the whole window, not just the icon.
 /// </para>
+/// <para>
+/// <b>Path data is parsed once per glyph, not once per render pass.</b> A resize, a theme switch or a
+/// scroll through a virtualized list re-renders every visible icon; the parsed geometry is held
+/// against the glyph itself, so those passes cost no parsing at all. The cache holds its glyphs
+/// weakly — a custom <see cref="IIconSet"/> that goes out of scope is collected normally.
+/// </para>
 /// </remarks>
 public sealed class Icon : Control
 {
@@ -291,6 +297,12 @@ public sealed class Icon : Control
 
     private static void DrawLayers(DrawingContext context, IconGlyph glyph, IBrush brush, Matrix transform)
     {
+        // One parse per glyph rather than one per render pass. Resolved before anything is pushed, so
+        // malformed path data cannot leave a half-drawn glyph behind — Render's catch takes it from
+        // here. The cache is keyed on the glyph, which is immutable and handed out reference-equal by
+        // every icon set, so there is nothing to invalidate; see IconGeometryCache.
+        Geometry[] geometries = IconGeometryCache.GetLayerGeometries(glyph);
+
         using (context.PushTransform(transform))
         {
             for (int i = 0; i < glyph.Layers.Count; i++)
@@ -304,9 +316,7 @@ public sealed class Icon : Control
                     continue;
                 }
 
-                // No geometry cache: glyph instances are already cached and reference-equal, and a
-                // cache keyed by path string would only add an invalidation surface.
-                Geometry geometry = Geometry.Parse(layer.PathData);
+                Geometry geometry = geometries[i];
 
                 if (layer.Opacity < 1.0)
                 {

@@ -1,4 +1,4 @@
-**Status:** TODO · Multi-phase (4 phases) · Branches `review/code-review-1fd4-phaseNN-<slug>`
+**Status:** IN PROGRESS · Multi-phase (4 phases) · Branches `review/code-review-1fd4-phaseNN-<slug>`
 
 # CODE-REVIEW-1FD4 — Post-1.0 review fixes
 
@@ -86,7 +86,15 @@ Every phase must hold all of these, not just its own acceptance criteria:
 
 ## PHASE01 — [Medium] `Icon.Render` re-parses geometry on every render pass
 
-**Status:** TODO · Branch `review/code-review-1fd4-phase01-geometry-cache`
+**Status:** DONE · Branch `review/code-review-1fd4-phase01-geometry-cache` ·
+Completion record `docs/done/CODE-REVIEW-1FD4-PHASE01.md`
+
+> **Outcome:** the cache is scoped to `Icon.Render`, as design step 3 permits. Sharing into
+> `ToGeometry`/`ToDrawing` was probed and rejected — Avalonia 12.1.0's `Geometry` carries no
+> owner state (so the framework would allow it), but `Geometry.Parse` returns a `StreamGeometry`
+> with a public settable `Transform`, and those two methods hand their result to the consumer.
+> The `Pen` hoist was declined: the pen depends on the caller's brush, so it cannot be cached
+> cleanly, and no built-in Phosphor glyph reaches that path.
 
 **Location:** `src/Enigma.Icons.Avalonia/Icon.cs:309`, `src/Enigma.Icons.Avalonia/IconGlyphExtensions.cs:152`
 
