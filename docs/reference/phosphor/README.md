@@ -81,5 +81,16 @@ tar --sort=name --owner=0 --group=0 --numeric-owner --mtime=@1735689600 \
 2. Rebuild the archive with the command above, named `phosphor-<newversion>-svgs-flat.tar.gz`.
 3. Delete the old archive, update this file (version, sha256, size, file count).
 4. Re-run the generator (SPEC §8) — `git diff` on `src/Enigma.Icons.Phosphor/` then shows exactly
-   which icons changed and which were added.
-5. Confirm the full-corpus integrity tests still pass (SPEC §12).
+   which icons changed and which were added. Then run it once more with `--check`: it must exit 0,
+   which is what proves the committed bytes are what the generator actually produces.
+5. Confirm the full-corpus integrity tests still pass — `dotnet test --solution Enigma.Icons.slnx`.
+   `tests/Enigma.Icons.Phosphor.UnitTests` re-derives SPEC §7.4's ground truth through the public
+   API, and its layer-shape assertions are written as literals: a refresh that adds an icon, gives a
+   fill icon a second path, or drops a duotone tint **will** turn them red. That is the tripwire
+   working, not a broken test — read the failure, confirm the upstream change is intended, then
+   update the literals in `LayerShapeTests.cs` (and the counts in SPEC §7.3/§7.4) in the same commit
+   as the new artwork.
+6. **Treat the refresh as at least a MINOR version bump** for `Enigma.Icons.Phosphor`. `PhosphorIcon`
+   members are numbered by position in the ordinal-sorted name list, so adding or removing a single
+   icon renumbers every member after it (SPEC §8.4). The names are the contract; the ordinals are
+   not.

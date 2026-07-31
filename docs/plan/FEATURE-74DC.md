@@ -1,4 +1,4 @@
-**Status:** TODO · Single-phase · Suggested build branch `feature/feature-74dc-release-prep`
+**Status:** DONE · Single-phase · Built on branch `feature/feature-74dc-release-prep`
 
 # FEATURE-74DC — Release preparation & NuGet publish runbook (v1.0.0 ×3)
 
@@ -438,71 +438,71 @@ Documentation/packaging work with **no new product code and no new tests**: DoD 
 satisfied by the Release build, the Release test run, and `dotnet pack` + nupkg inspection (D9),
 stated explicitly below.
 
-- [ ] `<TargetFrameworks>` verified in all three packable csprojs: `netstandard2.0;net8.0;net10.0`
+- [x] `<TargetFrameworks>` verified in all three packable csprojs: `netstandard2.0;net8.0;net10.0`
       (core, Phosphor) and `net8.0;net10.0` (Avalonia) — expected **unchanged**. Any change was
       proposed as `old → new`, **confirmed by the user before writing**, and logged in the
       `RELEASENOTES.md` *Compatibility* sub-section and the affected row of FEATURE-718F's
       supported-target-frameworks table. (D1)
-- [ ] `<Version>1.0.0</Version>` present exactly once in each of the three packable csprojs; absent
+- [x] `<Version>1.0.0</Version>` present exactly once in each of the three packable csprojs; absent
       from every non-packable project. (D2)
-- [ ] Prerequisite audit passes for all three csprojs: `PackageId`, `PackageReadmeFile` +
+- [x] Prerequisite audit passes for all three csprojs: `PackageId`, `PackageReadmeFile` +
       packed `README.md`, `PackageLicenseFile` + packed `LICENSE.md`, `PackageReleaseNotes`,
       `GenerateDocumentationFile=true`, `GeneratePackageOnBuild` absent/false, `RepositoryUrl` +
       `PackageProjectUrl` both `https://github.com/josueclement/Enigma.Icons` with `RepositoryType`
       `git` and **no `PackageIcon`** (SPEC §10.5); the packed
       `THIRD-PARTY-NOTICES.md` item present in **`Enigma.Icons.Phosphor` only**. (D3)
-- [ ] `<PackageReleaseNotes>` in each of the three csprojs mirrors its `RELEASENOTES.md` section and
+- [x] `<PackageReleaseNotes>` in each of the three csprojs mirrors its `RELEASENOTES.md` section and
       ends with `See RELEASENOTES.md for the full details.`; the Phosphor one names the artwork as
       **Phosphor Icons 2.1.1 (MIT)**. (D4)
-- [ ] `RELEASENOTES.md` has exactly the three `## Enigma.Icons[.X] v1.0.0 Release Notes` sections,
+- [x] `RELEASENOTES.md` has exactly the three `## Enigma.Icons[.X] v1.0.0 Release Notes` sections,
       each with *New Features · Compatibility · Dependencies · Version*, and between them record:
       **6 weights including the new duotone**, **1,512 icons**, the **zero-third-party-dependency**
       posture with **FusionCache dropped**, the **`netstandard2.0` floor** and its rationale, and
       that this **supersedes the retired `PhosphorIconsAvalonia` under a new identity with no upgrade
       path**. (D5)
-- [ ] The **root README** carries the "What's new in 1.0" callout and the **three packed READMEs
+- [x] The **root README** carries the "What's new in 1.0" callout and the **three packed READMEs
       carry none** (SPEC §13.2). Packed-README links are audited, not rewritten: they link
       `RELEASENOTES.md` by **absolute** URL and `LICENSE.md` relatively. FEATURE-718F's
       supported-target-frameworks table was **confirmed** (edited only if D1 changed a TFM set), and
       the badge pair was confirmed in the **root README only** — none in the packed three
       (SPEC §13.1, §13.2). (D6)
-- [ ] `dotnet list package --outdated` was run; non-coupled bumps proposed as `old → new`, approved,
+- [x] `dotnet list package --outdated` was run; non-coupled bumps proposed as `old → new`, approved,
       and applied in `Directory.Packages.props`; the Avalonia coupled set held back — or, with the
       user's opt-in, the **six** Avalonia ids moved together to one identical version and
       `AvaloniaUI.DiagnosticsSupport` moved to its own current version, with the xunit.v3-native
       headless check re-verified; every `old → new` transition and any held-back set recorded in
       `RELEASENOTES.md`. (D7)
-- [ ] `docs/RELEASE.md` present, created from `docs/reference/release/RELEASE.template.md`,
+- [x] `docs/RELEASE.md` present, created from `docs/reference/release/RELEASE.template.md`,
       created-not-clobbered, filled for **three** packages
       (`Enigma.Icons.slnx`, `main`, bare `X.Y.Z` tag, three pack lines, three push lines in
       core → Phosphor → Avalonia order). (D8)
-- [ ] `dotnet build Enigma.Icons.slnx -c Release` completes with **zero warnings**. (DoD 1; D9.1)
-- [ ] `dotnet test Enigma.Icons.slnx -c Release` — **whole suite green**, all three
+- [x] `dotnet build Enigma.Icons.slnx -c Release` completes with **zero warnings**. (DoD 1; D9.1)
+- [x] `dotnet test Enigma.Icons.slnx -c Release` — **whole suite green**, all three
       `*.UnitTests` projects. (DoD 2; D9.2)
-- [ ] `dotnet pack -c Release -o ./artifacts` succeeds for all three projects, producing
+- [x] `dotnet pack -c Release -o ./artifacts` succeeds for all three projects, producing
       `Enigma.Icons.1.0.0.nupkg`, `Enigma.Icons.Phosphor.1.0.0.nupkg` and
       `Enigma.Icons.Avalonia.1.0.0.nupkg` with the expected names/version, plus one `.snupkg` each
       (SPEC §10.4); each nuspec inspected for
       id, version, release notes, packed `README.md`/`LICENSE.md`, and the D3 dependency groups. (D9.3–4)
-- [ ] `Enigma.Icons.Phosphor.1.0.0.nupkg` **contains `THIRD-PARTY-NOTICES.md`** (SPEC §14.2) and all
+- [x] `Enigma.Icons.Phosphor.1.0.0.nupkg` **contains `THIRD-PARTY-NOTICES.md`** (SPEC §14.2) and all
       the six `phosphor.<weight>.dat` **manifest resources inside the assembly** (not as archive
       entries — SPEC §7.3); the other two nupkgs do **not** contain the notices file. (D9.5)
-- [ ] Phosphor nupkg size sanity-checked against SPEC §7.3's three-TFM expectation of
+- [x] Phosphor nupkg size sanity-checked against SPEC §7.3's three-TFM expectation of
       **≈3.4–3.5 MB** — deliberately **larger** than the retired package's 2,121,835 B, because the
       assembly ships once per TFM; the measured size is recorded in the completion doc. (D9.5)
-- [ ] **No size-reduction claim** appears in `RELEASENOTES.md`, any `<PackageReleaseNotes>`, or any
+- [x] **No size-reduction claim** appears in `RELEASENOTES.md`, any `<PackageReleaseNotes>`, or any
       README — and none of the retired figures ("36 MB", "≈3.74 MB", "≈4.05 MiB", "~45 % below",
       "1,153,846 B", "the real win is compression") survives anywhere. (D5, SPEC §7.3)
-- [ ] `Enigma.Icons.slnx` **unchanged** — FEATURE-74DC appends no `<Project>` entry (SPEC §3.4).
-- [ ] The pack/tag/push runbook was **printed, not run**, with the explicit "skill prints / user runs"
+- [x] `Enigma.Icons.slnx` **unchanged** — FEATURE-74DC appends no `<Project>` entry (SPEC §3.4).
+- [x] The pack/tag/push runbook was **printed, not run**, with the explicit "skill prints / user runs"
       statement, bare `1.0.0` tag, `main` branch, and no API key echoed. No `git tag`, publish
       `dotnet pack`, `dotnet nuget push`, or merge to `main` was executed. (D10)
-- [ ] All version surfaces agree at **1.0.0**: three csproj `<Version>`, three
+- [x] All version surfaces agree at **1.0.0**: three csproj `<Version>`, three
       `<PackageReleaseNotes>`, three `RELEASENOTES.md` sections, one root-README callout,
       `docs/RELEASE.md`.
-- [ ] **Roadmap + this plan flipped to `DONE`** (`docs/roadmap.md` FEATURE-74DC row; this file's
+- [x] **Roadmap + this plan flipped to `DONE`** (`docs/roadmap.md` FEATURE-74DC row; this file's
       status header). (DoD criterion 4.)
-- [ ] **Completion doc `docs/done/FEATURE-74DC.md` written** — summary, files touched, deviations,
+- [x] **Completion doc `docs/done/FEATURE-74DC.md` written** — summary, files touched, deviations,
       build/test evidence. (DoD criterion 5.)
 
 ## Notes / risks

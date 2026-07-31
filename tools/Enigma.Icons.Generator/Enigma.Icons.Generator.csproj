@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Shared settings (LangVersion, Nullable, TreatWarningsAsErrors, EnforceCodeStyleInBuild,
+       Authors, Copyright) are inherited from Directory.Build.props — SPEC §3.2. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <!-- Deliberately empty of references — SPEC §8, FEATURE-2DDE design step 1.
+       No PackageReference: the tool needs nothing outside the net10.0 framework.
+       No ProjectReference, in particular NOT to Enigma.Icons: this is a text emitter that reads
+       'd'/'opacity' strings out of XML and writes bytes. It never constructs an IconGlyph, so the
+       library would buy it nothing while coupling asset regeneration to the library's build state.
+       Enigma.Icons.Phosphor has no csproj yet either (SPEC §16.2) — the generated files are inert
+       committed data until FEATURE-3950 packages them. -->
+
+</Project>

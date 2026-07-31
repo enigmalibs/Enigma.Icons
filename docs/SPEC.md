@@ -215,19 +215,19 @@ Do not add any property not listed. In particular `ImplicitUsings` is set **per 
        AvaloniaUI.DiagnosticsSupport is versioned independently of Avalonia but belongs to the
        same coupled set (dotnet-release). -->
   <ItemGroup>
-    <PackageVersion Include="Avalonia" Version="12.0.4" />
-    <PackageVersion Include="Avalonia.Desktop" Version="12.0.4" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.0.4" />
-    <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.0.4" />
-    <PackageVersion Include="Avalonia.Headless" Version="12.0.4" />
-    <PackageVersion Include="Avalonia.Headless.XUnit" Version="12.0.4" />
-    <PackageVersion Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.1" />
+    <PackageVersion Include="Avalonia" Version="12.1.0" />
+    <PackageVersion Include="Avalonia.Desktop" Version="12.1.0" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.1.0" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.1.0" />
+    <PackageVersion Include="Avalonia.Headless" Version="12.1.0" />
+    <PackageVersion Include="Avalonia.Headless.XUnit" Version="12.1.0" />
+    <PackageVersion Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3" />
   </ItemGroup>
 
   <!-- Gallery sample -->
   <ItemGroup>
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.10" />
   </ItemGroup>
 
   <!-- Tests -->
@@ -238,22 +238,25 @@ Do not add any property not listed. In particular `ImplicitUsings` is set **per 
 </Project>
 ```
 
-> **Verify at restore time, do not assume.** The versions above were checked against the local
-> NuGet cache and against `/home/jo/Dev/Draw`'s `Directory.Packages.props`:
+> **Verify at restore time, do not assume.** The block above records the pins as of the **1.0.0
+> release** (FEATURE-74DC), which moved the coupled Avalonia set 12.0.4 → 12.1.0,
+> `AvaloniaUI.DiagnosticsSupport` 2.2.1 → 2.2.3, and `Microsoft.Extensions.Hosting` 10.0.8 → 10.0.10.
+> All were verified by a green Release build and the full 434-test suite at that version.
 >
-> - `Avalonia`, `Avalonia.Desktop`, `Avalonia.Themes.Fluent`, `Avalonia.Fonts.Inter`,
->   `Avalonia.Headless` — **12.0.4 confirmed** available (Draw pins exactly this set at 12.0.4).
-> - `Avalonia.Headless.XUnit` — only **12.0.2** is present in the local cache, so 12.0.4 will be
->   fetched from nuget.org. **First restore must confirm it resolves.** If it does not, pin the
->   entire Avalonia group at **12.0.2**, which is verified present end-to-end. Either way the group
->   moves as a unit — never mix versions within it.
-> - `Avalonia.Headless.XUnit` 12.0.2's nuspec declares a dependency on
->   `xunit.v3.extensibility.core` **3.2.2** — Avalonia 12's headless test package is xUnit
->   **v3**-native, so there is no v2/v3 conflict. Re-verify this after any Avalonia bump.
+> - The Avalonia set **moves as a unit** — never mix versions within it. `Avalonia` is the only id of
+>   the group that ships in a package, so bumping it raises the published dependency floor for
+>   `Enigma.Icons.Avalonia` consumers: treat it as a compatibility decision, not housekeeping.
+> - `AvaloniaUI.DiagnosticsSupport` belongs to the coupled set but is versioned on its **own** line —
+>   it can never share the Avalonia version number.
+> - `Avalonia.Headless.XUnit` 12.1.0's nuspec declares a dependency on
+>   `xunit.v3.extensibility.core` **3.2.2** on both `net8.0` and `net10.0` — Avalonia 12's headless
+>   test package is xUnit **v3**-native, so there is no v2/v3 conflict. **Re-verify this after any
+>   Avalonia bump**; a v2-based headless package would break the whole Avalonia test project.
 > - **There is no `Avalonia.Diagnostics` for Avalonia 12** — its newest version is 11.3.12. The
->   Avalonia 12 replacement is `AvaloniaUI.DiagnosticsSupport` (2.2.1 in cache and in Draw). Do not
->   reintroduce the old id.
-> - `CommunityToolkit.Mvvm` 8.4.2 and `Microsoft.Extensions.Hosting` 10.0.8 match Draw and Carbon.
+>   Avalonia 12 replacement is `AvaloniaUI.DiagnosticsSupport`. Do not reintroduce the old id.
+> - `/home/jo/Dev/Draw` remains on Avalonia 12.0.4 / DiagnosticsSupport 2.2.1. It is a house
+>   reference point, **not** a constraint — this solution is deliberately ahead of it as of 1.0.0.
+> - `CommunityToolkit.Mvvm` 8.4.2 and `xunit.v3` 3.2.2 were already current at the 1.0.0 release.
 >
 > **A known house inconsistency, resolved here:** `Draw` uses the `xunit.v3.mtp-v2` 3.2.2
 > meta-package, while `Enigma.Logging` and the `xunit-v3` skill use `xunit.v3` 3.2.2. This solution
@@ -654,8 +657,11 @@ Behaviour:
   — so `bold/acorn-bold.svg` and `bold/acorn.svg` both yield the icon `acorn` in variant `bold`.
   This is what makes an extracted Phosphor tree work with `FromDirectory` out of the box.
 - **Path safety:** `FromDirectory` resolves the root with `Path.GetFullPath`, enumerates only within
-  it, does not follow directory symlinks out of the root, and rejects any resolved file path that
-  does not start with the resolved root — no traversal via a crafted subdirectory name.
+  it, skips symlinked variant subdirectories **and** symlinked `.svg` files (`Path.GetFullPath` does
+  not resolve a symlink, so a link inside the root would otherwise be read), and rejects any resolved
+  file path that does not start with the resolved root — no traversal via a crafted subdirectory name.
+  A skipped entry is dropped silently, so one hostile entry cannot deny service on an otherwise valid
+  directory.
 - A directory that does not exist throws `DirectoryNotFoundException` at construction. A file that
   disappears between construction and first parse surfaces as `SvgParseException` wrapping the I/O
   error.
@@ -1069,7 +1075,7 @@ Behaviour:
 | Re-own it on `Icon` | `Avalonia.StyledProperty<TValue>.AddOwner<TOwner>(StyledPropertyMetadata<TValue>)` — the metadata argument is optional, so `AddOwner<Icon>()` is expected to compile; pass `null` explicitly if it does not |
 | Render invalidation | `Avalonia.Visual.AffectsRender<TOwner>(params AvaloniaProperty[])` |
 | Measure invalidation | `Avalonia.Layout.Layoutable.AffectsMeasure<TOwner>(params AvaloniaProperty[])` — on `Layoutable`, **not** `Visual` |
-| Render override | `protected override void Render(Avalonia.Media.DrawingContext)` — declared on `Avalonia.Visual` |
+| Render override | `public override void Render(Avalonia.Media.DrawingContext)` — declared **public** on `Avalonia.Visual` in Avalonia 12 (it was `protected` in 11), so an override may not narrow it: `protected` is CS0507. Corrected against 12.0.4 by FEATURE-3ADD. |
 | Stretch enum | `Avalonia.Media.Stretch` |
 
 - `Foreground` is registered with `TextElement.ForegroundProperty.AddOwner<Icon>()`, so an `Icon`
@@ -1157,11 +1163,19 @@ Usage:
 xmlns:ei="https://github.com/josueclement/Enigma.Icons"
 
 <ei:Icon Kind="Acorn" Weight="Duotone" Size="24"
-         Foreground="{DynamicResource SystemAccentColorBrush}" />
+         Foreground="{DynamicResource SystemControlForegroundAccentBrush}" />
 
 <Path Data="{ei:IconGeometry Acorn, Weight=Bold}" Fill="Black" Stretch="Uniform" />
 <Image Source="{ei:IconImage Acorn, Weight=Fill, Brush=Red}" Width="24" Height="24" />
 ```
+
+> **The accent brush key is `SystemControlForegroundAccentBrush`, not `SystemAccentColorBrush`.**
+> Corrected during FEATURE-469B, which is the first code in this solution to actually resolve it.
+> `Avalonia.Themes.Fluent` 12.0.4 defines `SystemAccentColor` (a **`Color`**) and derived brushes such
+> as `SystemControlForegroundAccentBrush`, but no `SystemAccentColorBrush` — verified against the
+> compiled theme assembly. The distinction matters more here than elsewhere: an unresolved
+> `DynamicResource` yields a null `Foreground`, and §10.2 makes a null `Foreground` paint **nothing**,
+> so the documented snippet would have produced an invisible icon with no error anywhere.
 
 C#:
 
@@ -1231,7 +1245,21 @@ material.
 
 - Wires `Host.CreateApplicationBuilder`, resolves `MainWindow` and its ViewModel from
   `host.Services`, and runs Avalonia's own lifetime (per the `avalonia` and `dotnet-solution-setup`
-  skills). `CommunityToolkit.Mvvm` for `[ObservableProperty]`/`[RelayCommand]`.
+  skills). `CommunityToolkit.Mvvm` in the **house explicit style** — `field`-keyword properties with
+  `SetProperty`, and get-only `RelayCommand`/`AsyncRelayCommand` properties initialized in the
+  constructor.
+  > **Corrected during FEATURE-469B.** This clause previously read "`CommunityToolkit.Mvvm` for
+  > `[ObservableProperty]`/`[RelayCommand]`", which the house `communitytoolkit-mvvm` skill forbids
+  > outright — it bans every MVVM generator attribute. The two could not both be satisfied; the user
+  > chose the skill, so the ViewModel carries no generator attributes and is not `partial`. The
+  > shipped code is the authority here.
+- **Compiled bindings must be switched on explicitly.** Avalonia 12.0.4's
+  `AvaloniaBuildTasks.targets` defaults `AvaloniaUseCompiledBindingsByDefault` to **`false`** and
+  passes it to the XAML compiler as `DefaultCompileBindings`, so an app that omits it gets reflection
+  bindings and every `x:DataType` becomes decorative. The gallery sets it to `true`, which is what
+  makes a mistyped binding path a build error (`AVLN2000`) instead of a silent runtime miss. Verified
+  at FEATURE-469B build time against the pinned version — do not assume the Avalonia templates' or
+  the `avalonia` skill's "on by default" claim.
 - Plain Avalonia + `Avalonia.Themes.Fluent` + `Avalonia.Fonts.Inter`, plus
   `AvaloniaUI.DiagnosticsSupport` under a `Debug`-only condition (**not** `Avalonia.Diagnostics`,
   which has no Avalonia 12 release — see §3.3). **Deliberately not** `Carbon.Avalonia.Desktop` —
@@ -1308,9 +1336,15 @@ corpus, so a bad regeneration cannot ship silently.
 
 `Avalonia.Headless.XUnit` at **whatever version `Directory.Packages.props` pins for the Avalonia
 group** (§3.3 — 12.0.4, with 12.0.2 as the documented whole-group fallback), used via
-`[AvaloniaTest]`. §3.3 is the only **normative** place a version is pinned. Version numbers may appear elsewhere in
+`[AvaloniaFact]` / `[AvaloniaTheory]`. §3.3 is the only **normative** place a version is pinned. Version numbers may appear elsewhere in
 this document and in plans only as dated verification notes — never as the value to write into a
 project file.
+
+> **Attribute names.** Avalonia 12's `Avalonia.Headless.XUnit` exposes `AvaloniaFactAttribute` and
+> `AvaloniaTheoryAttribute`; there is no `AvaloniaTestAttribute` — that was the Avalonia 11 name.
+> Verified against 12.0.4 by FEATURE-3ADD. The rule behind the name is unchanged: **every** test
+> method carries the Avalonia attribute, never a plain `[Fact]`/`[Theory]`, because `Geometry.Parse`
+> needs the platform render interface even in a pure geometry test.
 
 - `ToGeometry`: single layer → parseable, non-empty bounds; multi-layer → `GeometryGroup` with the
   right child count; the documented opacity-loss behaviour is asserted so it stays deliberate.

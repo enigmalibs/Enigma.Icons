@@ -10,16 +10,30 @@ Row order is the intended build order — `/build` surfaces the topmost `TODO` f
 | ID           | Title                                                                        | Status | Plan                      |
 |--------------|------------------------------------------------------------------------------|--------|---------------------------|
 | FEATURE-21C4 | Solution scaffolding & shared config (git init main, slnx, props, root docs)  | DONE   | docs/plan/FEATURE-21C4.md |
-| FEATURE-24DD | Enigma.Icons base library (model, SVG parser, IIconSet, SvgIconSet) + UnitTests | TODO | docs/plan/FEATURE-24DD.md |
-| FEATURE-2DDE | Asset generator tool + generated Phosphor resources and enum                  | TODO   | docs/plan/FEATURE-2DDE.md |
-| FEATURE-3950 | Enigma.Icons.Phosphor package + UnitTests (full-corpus integrity)             | TODO   | docs/plan/FEATURE-3950.md |
-| FEATURE-3ADD | Enigma.Icons.Avalonia (extensions, markup extensions, Icon control) + UnitTests | TODO | docs/plan/FEATURE-3ADD.md |
-| FEATURE-469B | Icon gallery sample app                                                      | TODO   | docs/plan/FEATURE-469B.md |
-| FEATURE-718F | Documentation (root + 3 packed READMEs)                                      | TODO   | docs/plan/FEATURE-718F.md |
-| FEATURE-74DC | Release preparation & NuGet publish runbook (v1.0.0 ×3)                      | TODO   | docs/plan/FEATURE-74DC.md |
+| FEATURE-24DD | Enigma.Icons base library (model, SVG parser, IIconSet, SvgIconSet) + UnitTests | DONE   | docs/plan/FEATURE-24DD.md |
+| FEATURE-2DDE | Asset generator tool + generated Phosphor resources and enum                  | DONE   | docs/plan/FEATURE-2DDE.md |
+| FEATURE-3950 | Enigma.Icons.Phosphor package + UnitTests (full-corpus integrity)             | DONE   | docs/plan/FEATURE-3950.md |
+| FEATURE-3ADD | Enigma.Icons.Avalonia (extensions, markup extensions, Icon control) + UnitTests | DONE   | docs/plan/FEATURE-3ADD.md |
+| FEATURE-469B | Icon gallery sample app                                                      | DONE   | docs/plan/FEATURE-469B.md |
+| FEATURE-718F | Documentation (root + 3 packed READMEs)                                      | DONE   | docs/plan/FEATURE-718F.md |
+| FEATURE-74DC | Release preparation & NuGet publish runbook (v1.0.0 ×3)                      | DONE   | docs/plan/FEATURE-74DC.md |
 | FEATURE-6FA1 | Enigma.Icons.Wpf renderer package — **DEFERRED post-1.0, do not build yet**   | TODO   | docs/plan/FEATURE-6FA1.md |
+| CODE-REVIEW-1FD4 | Post-1.0 review fixes (6 accepted findings, 4 phases)                    | DONE   | docs/plan/CODE-REVIEW-1FD4.md |
+| - PHASE01    | [Medium] Icon.Render re-parses geometry every render pass                    | DONE   | (in CODE-REVIEW-1FD4.md)  |
+| - PHASE02    | [Medium] PhosphorIconSet variant lookup diverges from the IIconSet contract  | DONE   | (in CODE-REVIEW-1FD4.md)  |
+| - PHASE03    | [Low] SvgIconSet.FromDirectory follows symlinked .svg files out of its root  | DONE   | (in CODE-REVIEW-1FD4.md)  |
+| - PHASE04    | [Low] Documentation and cosmetic sweep (byte count, IconNames doc, Array.Empty) | DONE | (in CODE-REVIEW-1FD4.md) |
+| FEATURE-1608 | docs/internals.html — maintainer's how-it-works explainer                    | TODO   | docs/plan/FEATURE-1608.md |
 
-All items are single-phase `FEATURE`s — no phase rows.
+`FEATURE-21C4` … `FEATURE-6FA1` are single-phase `FEATURE`s — no phase rows. `CODE-REVIEW-1FD4` is
+multi-phase: one phase per accepted review finding, ordered highest-severity first.
+
+> **`CODE-REVIEW-1FD4` and `FEATURE-1608` are post-1.0 items, planned 2026-07-27.** They come after
+> the deferred `FEATURE-6FA1` in row order but are **buildable now** — 6FA1 is the one row `/build`
+> must skip. Neither changes a package version: the review fixes fold into the **unpublished** 1.0.0
+> (no git remote, nothing on nuget.org), so `RELEASENOTES.md`, `PackageReleaseNotes` and the root
+> README callout stay exactly as `FEATURE-74DC` wrote them, and the stale `artifacts/*.nupkg` are
+> simply re-packed at publish time per `docs/RELEASE.md`.
 
 > **`FEATURE-6FA1` is not buildable work in this line.** It is a placeholder plan recording decisions
 > already made for a future WPF sibling (SPEC §17). `/build` must **skip** it: it is not part of the

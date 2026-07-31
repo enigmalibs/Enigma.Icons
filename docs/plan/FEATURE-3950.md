@@ -1,4 +1,4 @@
-**Status:** TODO · Single-phase · Suggested build branch `feature/feature-3950-phosphor-pack`
+**Status:** DONE · Single-phase · Suggested build branch `feature/feature-3950-phosphor-pack`
 
 # FEATURE-3950 — Enigma.Icons.Phosphor package + UnitTests
 
@@ -374,49 +374,49 @@ pre-add the Avalonia or Gallery entries — their projects do not exist yet.
 
 ## Acceptance criteria
 
-- [ ] `src/Enigma.Icons.Phosphor/Enigma.Icons.Phosphor.csproj` exists: TFMs
+- [x] `src/Enigma.Icons.Phosphor/Enigma.Icons.Phosphor.csproj` exists: TFMs
       `netstandard2.0;net8.0;net10.0`, `ImplicitUsings disable`, `GenerateDocumentationFile true`,
       **zero** `<PackageReference>`, one `ProjectReference` to `Enigma.Icons`, no `RootNamespace`
       override, `IsTrimmable`/`IsAotCompatible` on the two modern TFMs only (SPEC §10.4).
-- [ ] `<EmbeddedResource Include="Assets\phosphor.*.dat" />` present and the built assembly exposes
+- [x] `<EmbeddedResource Include="Assets\phosphor.*.dat" />` present and the built assembly exposes
       **exactly** the six manifest names of SPEC §7.1, verified by a test (not by inspection).
-- [ ] The csproj packs `README.md`, `..\..\LICENSE.md`, **and `..\..\THIRD-PARTY-NOTICES.md`**, the
+- [x] The csproj packs `README.md`, `..\..\LICENSE.md`, **and `..\..\THIRD-PARTY-NOTICES.md`**, the
       last with a comment recording the SPEC §14.2 licence obligation.
-- [ ] `dotnet pack src/Enigma.Icons.Phosphor/Enigma.Icons.Phosphor.csproj -c Release` succeeds and
+- [x] `dotnet pack src/Enigma.Icons.Phosphor/Enigma.Icons.Phosphor.csproj -c Release` succeeds and
       the resulting nupkg contains `README.md`, `LICENSE.md`, `THIRD-PARTY-NOTICES.md`, the six
       `.dat` resources (inside the assembly), and a dependency list whose **only** entry is
       `Enigma.Icons` — no third-party dependency on any TFM (SPEC §2.10). Local verification only;
       nothing is published.
-- [ ] `PhosphorWeight` declares the six members in the SPEC §9 order, each XML-documented.
-- [ ] `PhosphorIcon.g.cs` / `PhosphorIconNames.g.cs` are byte-identical to what FEATURE-2DDE
+- [x] `PhosphorWeight` declares the six members in the SPEC §9 order, each XML-documented.
+- [x] `PhosphorIcon.g.cs` / `PhosphorIconNames.g.cs` are byte-identical to what FEATURE-2DDE
       committed (`git diff` clean on both), and the generator's `--check` exits 0.
-- [ ] `PhosphorIconSet` implements the full SPEC §9 surface — typed and `IIconSet` — with the SPEC §9.1
+- [x] `PhosphorIconSet` implements the full SPEC §9 surface — typed and `IIconSet` — with the SPEC §9.1
       two-level cache, and contains **no** `Enum.ToString`/`Enum.Parse`/`Enum.GetName`/reflection over
       `PhosphorWeight` or `PhosphorIcon` (grep-verifiable; SPEC §2.11, §7.1, §10.4).
-- [ ] A variant the set lacks is a **miss** on every path — `TryGetGlyph` false, `GetGlyph` throws
+- [x] A variant the set lacks is a **miss** on every path — `TryGetGlyph` false, `GetGlyph` throws
       `IconNotFoundException` — with no fallback to `regular` (SPEC §6.1), asserted by test.
-- [ ] A corrupted resource fails loudly: version, weight-name, view-box, and count mismatches each
+- [x] A corrupted resource fails loudly: version, weight-name, view-box, and count mismatches each
       raise `InvalidDataException` (SPEC §7.2), and it **propagates from `TryGetGlyph` as well as
       `GetGlyph`** — never degraded to a silent `false` (SPEC §6.1 precedence table). Covered at least
       by the header assertions on the six real resources plus a negative case over a synthetic
       in-memory header.
-- [ ] `src/Enigma.Icons.Phosphor/README.md` exists, is packed, and carries the SPEC §14.2 credit line
+- [x] `src/Enigma.Icons.Phosphor/README.md` exists, is packed, and carries the SPEC §14.2 credit line
       verbatim plus the refresh pointer to `docs/reference/phosphor/README.md`.
-- [ ] `tests/Enigma.Icons.Phosphor.UnitTests` covers **every** bullet of SPEC §12.2, including the
+- [x] `tests/Enigma.Icons.Phosphor.UnitTests` covers **every** bullet of SPEC §12.2, including the
       full-corpus 9,072-pair integrity pass, the full-corpus enum↔name round trip, and all SPEC §7.4
       layer-shape tripwires (the 8 fill exceptions and the 2 duotone exceptions named explicitly).
-- [ ] `Enigma.Icons.slnx` gained exactly the two `<Project>` entries listed in Design step 7 and no
+- [x] `Enigma.Icons.slnx` gained exactly the two `<Project>` entries listed in Design step 7 and no
       others (SPEC §3.4).
-- [ ] Every new/edited text file is LF with a final newline (SPEC §2.7).
-- [ ] **`dotnet build Enigma.Icons.slnx -c Release` succeeds with zero warnings** across all TFMs
+- [x] Every new/edited text file is LF with a final newline (SPEC §2.7).
+- [x] **`dotnet build Enigma.Icons.slnx -c Release` succeeds with zero warnings** across all TFMs
       (`TreatWarningsAsErrors`, `EnforceCodeStyleInBuild`) — including CS1591 over the 1,512 generated
       enum members and IL2xxx/IL3xxx clean on `net8.0`/`net10.0` (SPEC §2, §10.4).
-- [ ] **`dotnet test Enigma.Icons.slnx` — the whole suite green**, not just this item's project
+- [x] **`dotnet test Enigma.Icons.slnx` — the whole suite green**, not just this item's project
       (`Enigma.Icons.UnitTests` + `Enigma.Icons.Phosphor.UnitTests`), with the run output captured as
       evidence.
-- [ ] **Roadmap + this plan flipped to `DONE`** (`docs/roadmap.md` FEATURE-3950 row; this file's
+- [x] **Roadmap + this plan flipped to `DONE`** (`docs/roadmap.md` FEATURE-3950 row; this file's
       status header). (DoD criterion 4.)
-- [ ] **Completion doc `docs/done/FEATURE-3950.md` written** — summary, files touched, deviations,
+- [x] **Completion doc `docs/done/FEATURE-3950.md` written** — summary, files touched, deviations,
       build/test evidence. (DoD criterion 5.)
 
 ## Notes / risks

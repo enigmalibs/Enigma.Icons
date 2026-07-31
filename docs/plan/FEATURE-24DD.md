@@ -1,4 +1,5 @@
-**Status:** TODO · Single-phase · Suggested build branch `feature/feature-24dd-icons-base`
+**Status:** DONE · Single-phase · Built on branch `feature/feature-24dd-icons-base` · Completion record
+`docs/done/FEATURE-24DD.md`
 
 # FEATURE-24DD — Enigma.Icons base library + UnitTests
 

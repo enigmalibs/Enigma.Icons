@@ -1,4 +1,4 @@
-**Status:** TODO · Single-phase · Suggested build branch `feature/feature-3add-avalonia-renderer`
+**Status:** DONE · Single-phase · Suggested build branch `feature/feature-3add-avalonia-renderer`
 
 # FEATURE-3ADD — Enigma.Icons.Avalonia + UnitTests
 
@@ -399,7 +399,7 @@ here.
 
 ## Acceptance criteria
 
-- [ ] **The pinned Avalonia coupled set resolved on this item's first restore** — `Avalonia` and
+- [x] **The pinned Avalonia coupled set resolved on this item's first restore** — `Avalonia` and
       `Avalonia.Headless.XUnit` included — for both `net8.0` and `net10.0`, and the resolved version is
       recorded in `docs/done/FEATURE-3ADD.md`. FEATURE-21C4 delegates SPEC §3.3's "verify at restore
       time, do not assume" obligation for the Avalonia group to this item. If `Avalonia.Headless.XUnit`
@@ -407,7 +407,7 @@ here.
       unit (never one package), and that package's `xunit.v3.extensibility.core` dependency was
       re-verified and the observation recorded (SPEC §3.3).
 
-- [ ] `src/Enigma.Icons.Avalonia/Enigma.Icons.Avalonia.csproj` targets **`net8.0;net10.0`** only and
+- [x] `src/Enigma.Icons.Avalonia/Enigma.Icons.Avalonia.csproj` targets **`net8.0;net10.0`** only and
       carries `ImplicitUsings disable` (solution-wide, SPEC §2 rule 2 / §3.2 — not a §10.4 property)
       and the full **SPEC §10.4 packable property set** — `GenerateDocumentationFile true`, `IncludeSymbols` + `SymbolPackageFormat snupkg`,
       `PackageReadmeFile`/`PackageLicenseFile`, no `GeneratePackageOnBuild` — with
@@ -417,34 +417,34 @@ here.
       with a no-op condition), house packable metadata with no `PackageReleaseNotes`, and the
       SPEC §10.5 canonical URLs (`RepositoryUrl` = `PackageProjectUrl` =
       `https://github.com/josueclement/Enigma.Icons`, `RepositoryType` = `git`, no `PackageIcon`).
-- [ ] It references `Avalonia` **without `Version=`** (CPM, SPEC §2.5) and `Enigma.Icons.Phosphor`
+- [x] It references `Avalonia` **without `Version=`** (CPM, SPEC §2.5) and `Enigma.Icons.Phosphor`
       by `ProjectReference`, with **no** direct `ProjectReference` to `Enigma.Icons`.
-- [ ] It packs `README.md` and `..\..\LICENSE.md`, and **does not** pack
+- [x] It packs `README.md` and `..\..\LICENSE.md`, and **does not** pack
       `THIRD-PARTY-NOTICES.md` (SPEC §14.2), with the reason recorded in a csproj comment.
-- [ ] `IconGlyphExtensions` exposes exactly the three SPEC §10.1 signatures; multi-layer
+- [x] `IconGlyphExtensions` exposes exactly the three SPEC §10.1 signatures; multi-layer
       `ToGeometry` returns a `GeometryGroup` with one child per layer and the first layer's
       `FillRule`; the opacity-loss caveat appears **both** in the XML doc and in
       `src/Enigma.Icons.Avalonia/README.md`.
-- [ ] `ToDrawing` wraps a sub-1.0-opacity layer in its own `DrawingGroup` of that opacity, leaves
+- [x] `ToDrawing` wraps a sub-1.0-opacity layer in its own `DrawingGroup` of that opacity, leaves
       opaque layers unwrapped, skips non-filled non-stroked layers, and builds a `Pen` for stroked
       layers; `ToDrawingImage` wraps `ToDrawing`; all three throw `ArgumentNullException` on null
       arguments.
-- [ ] `Icon` derives from `Control` (not `TemplatedControl`), the package contains **no `.axaml`/XAML
+- [x] `Icon` derives from `Control` (not `TemplatedControl`), the package contains **no `.axaml`/XAML
       file at all**, and the README states that no `<StyleInclude>` is required.
-- [ ] `Icon` registers all eight SPEC §10.2 properties with the stated defaults, `Foreground` via
+- [x] `Icon` registers all eight SPEC §10.2 properties with the stated defaults, `Foreground` via
       `TextElement.ForegroundProperty.AddOwner<Icon>()`, `AffectsRender` on all eight and
       `AffectsMeasure` on `Size`/`Stretch`; `Focusable` is `false`; the automation peer reports the
       control as non-content unless `AutomationProperties.Name` is set.
-- [ ] `Icon.Render` never throws: a missing glyph, an unresolvable `IconSet`/`IconName`, and a null
+- [x] `Icon.Render` never throws: a missing glyph, an unresolvable `IconSet`/`IconName`, and a null
       `Foreground` each paint nothing and pass their headless test.
-- [ ] `IconSet` (with `IconName`) takes precedence over `Kind`/`Weight`, proven by a test using a
+- [x] `IconSet` (with `IconName`) takes precedence over `Kind`/`Weight`, proven by a test using a
       `SvgIconSet` built from in-memory sources.
-- [ ] `Stretch` scaling from `glyph.ViewBox` into `Bounds` is implemented for all four modes, with
+- [x] `Stretch` scaling from `glyph.ViewBox` into `Bounds` is implemented for all four modes, with
       centring, and an explicit `Width`/`Height` overriding `Size` in measure.
-- [ ] Both markup extensions exist in `Enigma.Icons.Avalonia.Markup` with the SPEC §10.3 signatures,
+- [x] Both markup extensions exist in `Enigma.Icons.Avalonia.Markup` with the SPEC §10.3 signatures,
       positional constructors, `Weight = Regular`, `Brush = Brushes.Black`, and the `IconImage`
       naming rationale documented.
-- [ ] `src/Enigma.Icons.Avalonia/Properties/AssemblyInfo.cs` exists and carries the **two** SPEC §10.3
+- [x] `src/Enigma.Icons.Avalonia/Properties/AssemblyInfo.cs` exists and carries the **two** SPEC §10.3
       `XmlnsDefinition` attributes (one for `Enigma.Icons.Avalonia`, one for
       `Enigma.Icons.Avalonia.Markup`, both mapped to
       `https://github.com/josueclement/Enigma.Icons`), so a **single**
@@ -452,23 +452,23 @@ here.
       `{ei:IconGeometry}` **and** `{ei:IconImage}` — proven by the gallery (FEATURE-469B) compiling
       with that one prefix; the packed README documents that form as primary and the per-namespace
       `using:` forms as the fallback.
-- [ ] `tests/Enigma.Icons.Avalonia.UnitTests` exists with `Avalonia.Headless.XUnit` + `xunit.v3`,
+- [x] `tests/Enigma.Icons.Avalonia.UnitTests` exists with `Avalonia.Headless.XUnit` + `xunit.v3`,
       an `AvaloniaTestApplication` builder, and **zero** `[Fact]`/`[Theory]` attributes — every test
       is `[AvaloniaTest]`/`[AvaloniaTheory]`.
-- [ ] Every bullet of SPEC §12.3 has at least one passing test, and the SPEC §12.3 items that turn
+- [x] Every bullet of SPEC §12.3 has at least one passing test, and the SPEC §12.3 items that turn
       out not to be assertable headlessly (render invalidation, and the render pass itself if the
       platform cannot be driven) are named in the completion doc with what was asserted instead.
-- [ ] `Enigma.Icons.slnx` gained exactly the two `<Project>` entries of the SPEC §3.4 table row for
+- [x] `Enigma.Icons.slnx` gained exactly the two `<Project>` entries of the SPEC §3.4 table row for
       FEATURE-3ADD, and references no non-existent project.
-- [ ] Every new text file is **LF with a final newline**; every `.cs` file declares its own explicit
+- [x] Every new text file is **LF with a final newline**; every `.cs` file declares its own explicit
       `using` directives (SPEC §2).
-- [ ] **`dotnet build Enigma.Icons.slnx` succeeds with zero warnings** for both TFMs
+- [x] **`dotnet build Enigma.Icons.slnx` succeeds with zero warnings** for both TFMs
       (`TreatWarningsAsErrors`, including IL2xxx/IL3xxx trim-analyzer warnings — SPEC §2, §10.4).
-- [ ] **`dotnet test Enigma.Icons.slnx` is green for the whole suite** (Enigma.Icons,
+- [x] **`dotnet test Enigma.Icons.slnx` is green for the whole suite** (Enigma.Icons,
       Enigma.Icons.Phosphor, and Enigma.Icons.Avalonia unit tests); output captured as evidence.
-- [ ] **Roadmap + this plan flipped to `DONE`** (`docs/roadmap.md` FEATURE-3ADD row; this file's
+- [x] **Roadmap + this plan flipped to `DONE`** (`docs/roadmap.md` FEATURE-3ADD row; this file's
       status header). (DoD criterion 4.)
-- [ ] **Completion doc `docs/done/FEATURE-3ADD.md` written** — summary, files touched, deviations,
+- [x] **Completion doc `docs/done/FEATURE-3ADD.md` written** — summary, files touched, deviations,
       build/test evidence. (DoD criterion 5.)
 
 ## Notes / risks
