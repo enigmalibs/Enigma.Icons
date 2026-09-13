@@ -29,7 +29,7 @@ Row order is the intended build order — `/build` surfaces the topmost `TODO` f
 | - PHASE02        | Layout math & Avalonia rasterizer                                               | DONE        | (in FEATURE-4E1F.md)          |
 | - PHASE03        | ICO container writer & exporter                                                 | DONE        | (in FEATURE-4E1F.md)          |
 | - PHASE04        | Main window: catalog, controls, preview                                         | DONE        | (in FEATURE-4E1F.md)          |
-| - PHASE05        | Output panel & Generate command                                                 | TODO        | (in FEATURE-4E1F.md)          |
+| - PHASE05        | Output panel & Generate command                                                 | DONE        | (in FEATURE-4E1F.md)          |
 | - PHASE06        | Documentation (SPEC §18, READMEs, CLAUDE.md)                                    | TODO        | (in FEATURE-4E1F.md)          |
 
 `FEATURE-21C4` … `FEATURE-1608` are single-phase `FEATURE`s — no phase rows. `CODE-REVIEW-1FD4` is

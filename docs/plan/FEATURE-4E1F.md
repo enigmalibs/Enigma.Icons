@@ -421,7 +421,7 @@ Every phase must hold all of these, not only its own acceptance criteria:
 
 ## PHASE05 — Output panel & Generate command
 
-**Status:** TODO · Branch `feature/feature-4e1f-phase05-export-ui`
+**Status:** DONE · Branch `feature/feature-4e1f-phase05-export-ui`
 
 ### Steps
 

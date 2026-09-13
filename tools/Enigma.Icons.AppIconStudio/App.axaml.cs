@@ -3,6 +3,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Enigma.Icons.AppIconStudio.Export;
 using Enigma.Icons.AppIconStudio.Rendering;
+using Enigma.Icons.AppIconStudio.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -29,6 +30,10 @@ public partial class App : Application
         // Stateless and thread-confined to the UI thread by contract — one instance is right.
         builder.Services.AddSingleton<IIconRasterizer, AvaloniaIconRasterizer>();
         builder.Services.AddSingleton<IconExporter>();
+
+        // Takes no dependencies and resolves the window per call; injecting the window instead would
+        // close the MainWindow -> ViewModel -> picker -> MainWindow cycle.
+        builder.Services.AddSingleton<IFolderPicker, AvaloniaFolderPicker>();
         builder.Services.AddSingleton<MainWindowViewModel>();
         builder.Services.AddSingleton<MainWindow>();
 
