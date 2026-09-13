@@ -95,10 +95,11 @@ public sealed class MainWindowViewModel : ObservableObject
 
         BrowseCommand = new AsyncRelayCommand(OnBrowseAsync);
         GenerateCommand = new AsyncRelayCommand(OnGenerateAsync, CanGenerate);
+        ResetCommand = new RelayCommand(Reset);
 
-        // The blue plate and white glyph of the existing Enigma.MarkdownEditor icon, so the reference
-        // look is where the studio starts rather than something to rebuild by hand.
-        ActiveIcon = Catalog[(int)PhosphorIcon.MarkdownLogo];
+        // Assigned here rather than left to Reset(): ActiveIcon and CurrentDesign are non-nullable,
+        // and the compiler's definite-assignment analysis does not see through a method call.
+        ActiveIcon = DefaultIconEntry;
         SelectedIcon = ActiveIcon;
         CurrentDesign = BuildDesign();
 
@@ -122,7 +123,7 @@ public sealed class MainWindowViewModel : ObservableObject
                 ApplyFilter();
             }
         }
-    } = string.Empty;
+    } = StudioDefaults.SearchText;
 
     /// <summary>The catalog rows currently shown, after the search filter.</summary>
     /// <remarks>
@@ -196,7 +197,7 @@ public sealed class MainWindowViewModel : ObservableObject
                 SchedulePreview();
             }
         }
-    } = WeightOptionList[4];
+    } = FindWeight(StudioDefaults.Weight);
 
     /// <summary>Flat colour or two-stop gradient.</summary>
     public FillModeOption SelectedFillMode
@@ -210,7 +211,7 @@ public sealed class MainWindowViewModel : ObservableObject
                 SchedulePreview();
             }
         }
-    } = FillModeOptionList[0];
+    } = FindFillMode(StudioDefaults.FillMode);
 
     /// <summary>True when the plate is a gradient; enables the second colour and the angle slider.</summary>
     public bool IsGradient => SelectedFillMode.Mode == PlateFillMode.LinearGradient;
@@ -226,7 +227,7 @@ public sealed class MainWindowViewModel : ObservableObject
                 SchedulePreview();
             }
         }
-    } = Color.FromRgb(0x3B, 0x72, 0xF0);
+    } = StudioDefaults.PrimaryColor;
 
     /// <summary>Gradient stop 1. Ignored while the plate is solid.</summary>
     public Color SecondaryColor
@@ -239,7 +240,7 @@ public sealed class MainWindowViewModel : ObservableObject
                 SchedulePreview();
             }
         }
-    } = Color.FromRgb(0x1E, 0x3A, 0x8A);
+    } = StudioDefaults.SecondaryColor;
 
     /// <summary>The gradient direction in degrees, clockwise from left-to-right.</summary>
     public double GradientAngle
@@ -252,7 +253,7 @@ public sealed class MainWindowViewModel : ObservableObject
                 SchedulePreview();
             }
         }
-    } = PlateFill.DefaultAngleDegrees;
+    } = StudioDefaults.GradientAngleDegrees;
 
     /// <summary>The colour every glyph layer paints with.</summary>
     public Color GlyphColor
@@ -265,7 +266,7 @@ public sealed class MainWindowViewModel : ObservableObject
                 SchedulePreview();
             }
         }
-    } = Colors.White;
+    } = StudioDefaults.GlyphColor;
 
     /// <summary>Corner radius as a fraction of the plate edge, 0.0–0.5.</summary>
     public double CornerRadiusRatio
@@ -278,7 +279,7 @@ public sealed class MainWindowViewModel : ObservableObject
                 SchedulePreview();
             }
         }
-    } = IconDesign.DefaultCornerRadiusRatio;
+    } = StudioDefaults.CornerRadiusRatio;
 
     /// <summary>The fraction of the plate edge the glyph spans, 0.2–1.0.</summary>
     public double GlyphScale
@@ -291,7 +292,7 @@ public sealed class MainWindowViewModel : ObservableObject
                 SchedulePreview();
             }
         }
-    } = IconDesign.DefaultGlyphScale;
+    } = StudioDefaults.GlyphScale;
 
     /// <summary>The design the preview last rendered, and the one an export will use. Never null.</summary>
     public IconDesign CurrentDesign
@@ -354,7 +355,7 @@ public sealed class MainWindowViewModel : ObservableObject
                 RefreshGenerateState();
             }
         }
-    } = "app";
+    } = StudioDefaults.BaseName;
 
     /// <summary>The frame sizes offered for the <c>.ico</c>.</summary>
     public IReadOnlyList<SizeOption> IcoSizes { get; }
@@ -392,6 +393,14 @@ public sealed class MainWindowViewModel : ObservableObject
     /// <summary>Writes the icon and the PNGs.</summary>
     public AsyncRelayCommand GenerateCommand { get; }
 
+    /// <summary>Puts every design and output setting back to the value the window opened with.</summary>
+    /// <remarks>
+    /// Always enabled. Tracking whether the window is already at its defaults would mean comparing
+    /// eleven values on every property change, and "why is Reset greyed out?" is a worse question
+    /// than a click that does nothing.
+    /// </remarks>
+    public RelayCommand ResetCommand { get; }
+
     /// <summary>Builds the request the next export would run.</summary>
     /// <remarks>
     /// Composed from the <i>current</i> control values rather than from <see cref="CurrentDesign"/>:
@@ -408,6 +417,51 @@ public sealed class MainWindowViewModel : ObservableObject
             BaseName,
             SelectedSizes(IcoSizes),
             SelectedSizes(PngSizes));
+
+    /// <summary>
+    /// Restores every design and output setting to its <see cref="StudioDefaults"/> value, and
+    /// re-renders immediately.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>The output folder is deliberately kept.</b> It is a session destination rather than a
+    /// design value: clearing it would re-disable <see cref="GenerateCommand"/> and send the user
+    /// back through the file dialog, which costs more than the reset saves. The button's tooltip says
+    /// so, so the exception is not a surprise.
+    /// </para>
+    /// <para>
+    /// The render is synchronous rather than debounced. <see cref="SchedulePreview"/> exists to
+    /// coalesce slider drags and keystrokes; a reset is one deliberate click, so the preview, the
+    /// thumbnail strip and <see cref="StatusText"/> are correct the instant the button is released —
+    /// the same closing move the constructor makes.
+    /// </para>
+    /// </remarks>
+    public void Reset()
+    {
+        // The icon first: ApplyFilter reads ActiveIcon to decide what the list highlights.
+        ActiveIcon = DefaultIconEntry;
+        SearchText = StudioDefaults.SearchText;
+
+        SelectedWeight = FindWeight(StudioDefaults.Weight);
+        SelectedFillMode = FindFillMode(StudioDefaults.FillMode);
+        PrimaryColor = StudioDefaults.PrimaryColor;
+        SecondaryColor = StudioDefaults.SecondaryColor;
+        GradientAngle = StudioDefaults.GradientAngleDegrees;
+        GlyphColor = StudioDefaults.GlyphColor;
+        CornerRadiusRatio = StudioDefaults.CornerRadiusRatio;
+        GlyphScale = StudioDefaults.GlyphScale;
+
+        BaseName = StudioDefaults.BaseName;
+        RestoreDefaultSizes(IcoSizes);
+        RestoreDefaultSizes(PngSizes);
+
+        // Unconditionally, because SearchText's setter only filters when the text actually changed —
+        // and a reset from an already-empty search box still has to re-highlight the restored icon.
+        ApplyFilter();
+
+        _previewDebounce.Stop();
+        RegeneratePreview();
+    }
 
     /// <summary>
     /// Backs <see cref="Weights"/>. A static property rather than an instance one because
@@ -433,6 +487,55 @@ public sealed class MainWindowViewModel : ObservableObject
         new FillModeOption("Solid", PlateFillMode.Solid),
         new FillModeOption("Gradient", PlateFillMode.LinearGradient),
     ];
+
+    /// <summary>The catalog row a new — or a freshly reset — design starts from.</summary>
+    /// <remarks>
+    /// <see cref="PhosphorIconNames.All"/> is in enum order (SPEC §8.4), so the cast <i>is</i> the
+    /// index — no <c>Enum.Parse</c>, no reflection (SPEC §2.11).
+    /// </remarks>
+    private static IconEntry DefaultIconEntry => Catalog[(int)StudioDefaults.Icon];
+
+    /// <summary>Finds the selector entry for a weight.</summary>
+    /// <param name="weight">The weight to look up.</param>
+    /// <returns>The matching <see cref="WeightOption"/>.</returns>
+    /// <exception cref="InvalidOperationException">No entry carries that weight.</exception>
+    /// <remarks>
+    /// A lookup rather than <c>WeightOptionList[4]</c>: the default is stated once, as a weight, in
+    /// <see cref="StudioDefaults"/> — reordering the selector must not silently change it. Six
+    /// comparisons, run on construction and on a reset, never on the render path.
+    /// </remarks>
+    private static WeightOption FindWeight(PhosphorWeight weight)
+    {
+        foreach (WeightOption option in WeightOptionList)
+        {
+            if (option.Weight == weight)
+            {
+                return option;
+            }
+        }
+
+        // Unreachable while the list covers all six declared weights. A throw rather than a silent
+        // fallback to the first entry, so an edit that drops one fails loudly instead of quietly
+        // changing what the studio opens with.
+        throw new InvalidOperationException("No weight option matches the requested weight.");
+    }
+
+    /// <summary>Finds the selector entry for a plate fill mode.</summary>
+    /// <param name="mode">The mode to look up.</param>
+    /// <returns>The matching <see cref="FillModeOption"/>.</returns>
+    /// <exception cref="InvalidOperationException">No entry carries that mode.</exception>
+    private static FillModeOption FindFillMode(PlateFillMode mode)
+    {
+        foreach (FillModeOption option in FillModeOptionList)
+        {
+            if (option.Mode == mode)
+            {
+                return option;
+            }
+        }
+
+        throw new InvalidOperationException("No fill mode option matches the requested mode.");
+    }
 
     /// <summary>Rebuilds <see cref="CurrentDesign"/> from the current control state.</summary>
     /// <returns>The design the preview and any export will use.</returns>
@@ -606,6 +709,21 @@ public sealed class MainWindowViewModel : ObservableObject
         if (e.PropertyName is null or nameof(SizeOption.IsSelected))
         {
             RefreshGenerateState();
+        }
+    }
+
+    /// <summary>Re-ticks a size list exactly as the window opened it.</summary>
+    /// <param name="options">The list to restore.</param>
+    /// <remarks>
+    /// Each option knows its own starting state, so this never has to learn which sizes
+    /// <see cref="BuildSizeOptions"/> was handed. Every change routes back through
+    /// <see cref="OnSizeOptionChanged"/>, so <see cref="GenerateCommand"/> re-evaluates on its own.
+    /// </remarks>
+    private static void RestoreDefaultSizes(IReadOnlyList<SizeOption> options)
+    {
+        for (int i = 0; i < options.Count; i++)
+        {
+            options[i].IsSelected = options[i].IsSelectedByDefault;
         }
     }
 

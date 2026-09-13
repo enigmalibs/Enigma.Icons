@@ -57,7 +57,10 @@ The test runner is Microsoft.Testing.Platform, selected by `global.json` (SPEC �
 > **`CODE-REVIEW-1FD4` (review fixes) is `DONE`** — all four phases landed, and its completion docs
 > record the two findings deliberately left as-is, so do not re-raise them. **`FEATURE-4E1F` (the
 > app-icon studio, SPEC §18) is `DONE`** — six phases, two new non-packable projects, nothing under
-> `src/` touched. `FEATURE-1608` (`docs/internals.html`) is the one remaining buildable item.
+> `src/` touched, and **`FEATURE-0DD4` (the studio's Reset button) is `DONE`** on top of it: every
+> startup value now lives in `StudioDefaults`, which the ViewModel's initializers *and* `Reset` both
+> read — never re-state one of those literals.
+> `FEATURE-1608` (`docs/internals.html`) is the one remaining buildable item.
 > FEATURE-6FA1 (the WPF sibling) is the one roadmap row `/build` must **skip**: it is **deferred
 > post-1.0 and must not be built**.
 

@@ -1,4 +1,4 @@
-**Status:** TODO · Single-phase · Branch `feature/feature-0dd4-icon-studio-reset`
+**Status:** DONE · Single-phase · Branch `feature/feature-0dd4-icon-studio-reset`
 **Type:** FEATURE
 **Run:** feature/2026-09-13-icon-studio-reset
 
