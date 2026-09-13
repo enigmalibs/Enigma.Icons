@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Enigma.Icons.AppIconStudio.Export;
 using Enigma.Icons.AppIconStudio.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -27,6 +28,7 @@ public partial class App : Application
 
         // Stateless and thread-confined to the UI thread by contract — one instance is right.
         builder.Services.AddSingleton<IIconRasterizer, AvaloniaIconRasterizer>();
+        builder.Services.AddSingleton<IconExporter>();
         builder.Services.AddSingleton<MainWindowViewModel>();
         builder.Services.AddSingleton<MainWindow>();
 

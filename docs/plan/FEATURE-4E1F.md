@@ -359,7 +359,7 @@ Every phase must hold all of these, not only its own acceptance criteria:
 
 ## PHASE03 — ICO container writer & exporter
 
-**Status:** TODO · Branch `feature/feature-4e1f-phase03-ico-export`
+**Status:** DONE · Branch `feature/feature-4e1f-phase03-ico-export`
 
 ### Steps
 
