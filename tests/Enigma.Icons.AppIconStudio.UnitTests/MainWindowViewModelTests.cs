@@ -4,7 +4,9 @@ using Avalonia;
 using Avalonia.Headless.XUnit;
 using Avalonia.Media;
 using Enigma.Icons.AppIconStudio.Design;
+using Enigma.Icons.AppIconStudio.Export;
 using Enigma.Icons.AppIconStudio.Rendering;
+using Enigma.Icons.AppIconStudio.UnitTests.TestSupport;
 using Enigma.Icons.Phosphor;
 using Xunit;
 
@@ -172,10 +174,23 @@ public sealed class MainWindowViewModelTests
     }
 
     [AvaloniaFact]
-    public void Constructor_RequiresARasterizer()
-        // null! is the point of the test: it forces the null a nullable-aware caller cannot pass, so
-        // the runtime guard is exercised rather than only the compiler's (SPEC §2.3).
-        => Assert.Throws<ArgumentNullException>(() => new MainWindowViewModel(null!));
+    public void Constructor_RequiresEveryDependency()
+    {
+        var rasterizer = new AvaloniaIconRasterizer();
+        var exporter = new IconExporter(rasterizer);
+        var picker = new FakeFolderPicker();
 
-    private static MainWindowViewModel Create() => new MainWindowViewModel(new AvaloniaIconRasterizer());
+        // null! is the point of these: they force the nulls a nullable-aware caller cannot pass, so
+        // the runtime guards are exercised rather than only the compiler's (SPEC §2.3).
+        Assert.Throws<ArgumentNullException>(() => new MainWindowViewModel(null!, exporter, picker));
+        Assert.Throws<ArgumentNullException>(() => new MainWindowViewModel(rasterizer, null!, picker));
+        Assert.Throws<ArgumentNullException>(() => new MainWindowViewModel(rasterizer, exporter, null!));
+    }
+
+    private static MainWindowViewModel Create()
+    {
+        var rasterizer = new AvaloniaIconRasterizer();
+
+        return new MainWindowViewModel(rasterizer, new IconExporter(rasterizer), new FakeFolderPicker());
+    }
 }

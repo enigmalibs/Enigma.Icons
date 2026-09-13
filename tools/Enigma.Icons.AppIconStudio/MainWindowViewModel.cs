@@ -1,13 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Enigma.Icons.AppIconStudio.Design;
+using Enigma.Icons.AppIconStudio.Export;
 using Enigma.Icons.AppIconStudio.Rendering;
+using Enigma.Icons.AppIconStudio.Services;
 using Enigma.Icons.Phosphor;
 
 namespace Enigma.Icons.AppIconStudio;
@@ -48,20 +54,47 @@ public sealed class MainWindowViewModel : ObservableObject
     /// </summary>
     private static readonly IconEntry[] Catalog = BuildCatalog();
 
+    /// <summary>
+    /// The frame sizes the icon list offers, all ticked by default — Windows' recommended set, and
+    /// the largest an ICO directory can address is 256.
+    /// </summary>
+    private static readonly int[] OfferedIcoSizes = [16, 24, 32, 48, 64, 128, 256];
+
+    /// <summary>
+    /// The standalone PNG sizes the list offers. Only the three largest start ticked: those are the
+    /// About/splash assets the icon itself cannot serve well, and the small ones are already inside
+    /// the <c>.ico</c>.
+    /// </summary>
+    private static readonly int[] OfferedPngSizes = [16, 32, 64, 128, 256, 512, 1024];
+
+    private static readonly int[] DefaultPngSizes = [256, 512, 1024];
+
     private readonly IIconRasterizer _rasterizer;
+    private readonly IconExporter _exporter;
+    private readonly IFolderPicker _folderPicker;
 
     /// <summary>Coalesces slider drags and keystrokes into one re-render.</summary>
     private readonly DispatcherTimer _previewDebounce;
 
     /// <summary>Creates the ViewModel and renders the initial preview.</summary>
     /// <param name="rasterizer">Turns the current design into the images on screen.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="rasterizer"/> is null.</exception>
-    public MainWindowViewModel(IIconRasterizer rasterizer)
+    /// <param name="exporter">Writes the icon and PNG files.</param>
+    /// <param name="folderPicker">Asks the user where to write them.</param>
+    /// <exception cref="ArgumentNullException">Any argument is null.</exception>
+    public MainWindowViewModel(IIconRasterizer rasterizer, IconExporter exporter, IFolderPicker folderPicker)
     {
         _rasterizer = rasterizer ?? throw new ArgumentNullException(nameof(rasterizer));
+        _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
+        _folderPicker = folderPicker ?? throw new ArgumentNullException(nameof(folderPicker));
 
         _previewDebounce = new DispatcherTimer { Interval = PreviewDelay };
         _previewDebounce.Tick += OnPreviewDebounceTick;
+
+        IcoSizes = BuildSizeOptions(OfferedIcoSizes, OfferedIcoSizes);
+        PngSizes = BuildSizeOptions(OfferedPngSizes, DefaultPngSizes);
+
+        BrowseCommand = new AsyncRelayCommand(OnBrowseAsync);
+        GenerateCommand = new AsyncRelayCommand(OnGenerateAsync, CanGenerate);
 
         // The blue plate and white glyph of the existing Enigma.MarkdownEditor icon, so the reference
         // look is where the studio starts rather than something to rebuild by hand.
@@ -71,6 +104,7 @@ public sealed class MainWindowViewModel : ObservableObject
 
         ApplyFilter();
         RegeneratePreview();
+        RefreshGenerateState();
 
         // ActiveIcon's setter armed the debounce on the way in; the preview is already current, so
         // there is nothing for that tick to do.
@@ -296,6 +330,85 @@ public sealed class MainWindowViewModel : ObservableObject
     /// <summary>The two plate fill modes, with their display names.</summary>
     public IReadOnlyList<FillModeOption> FillModes => FillModeOptionList;
 
+    /// <summary>The directory the next export writes into. Must exist before Generate lights up.</summary>
+    public string OutputDirectory
+    {
+        get;
+        set
+        {
+            if (SetProperty(ref field, value))
+            {
+                RefreshGenerateState();
+            }
+        }
+    } = string.Empty;
+
+    /// <summary>The file-name stem: <c>app</c> writes <c>app.ico</c> and <c>app-256.png</c>.</summary>
+    public string BaseName
+    {
+        get;
+        set
+        {
+            if (SetProperty(ref field, value))
+            {
+                RefreshGenerateState();
+            }
+        }
+    } = "app";
+
+    /// <summary>The frame sizes offered for the <c>.ico</c>.</summary>
+    public IReadOnlyList<SizeOption> IcoSizes { get; }
+
+    /// <summary>The sizes offered for the standalone PNGs.</summary>
+    public IReadOnlyList<SizeOption> PngSizes { get; }
+
+    /// <summary>True while an export is running; the button stays disabled until it finishes.</summary>
+    public bool IsExporting
+    {
+        get;
+        private set
+        {
+            if (SetProperty(ref field, value))
+            {
+                RefreshGenerateState();
+            }
+        }
+    }
+
+    /// <summary>Why Generate is disabled, or empty when it is ready.</summary>
+    /// <remarks>
+    /// A disabled button with no explanation is a guessing game — especially the "pick a folder
+    /// first" case, which is where every run starts.
+    /// </remarks>
+    public string GenerateHint
+    {
+        get;
+        private set => SetProperty(ref field, value);
+    } = string.Empty;
+
+    /// <summary>Asks for an output directory.</summary>
+    public AsyncRelayCommand BrowseCommand { get; }
+
+    /// <summary>Writes the icon and the PNGs.</summary>
+    public AsyncRelayCommand GenerateCommand { get; }
+
+    /// <summary>Builds the request the next export would run.</summary>
+    /// <remarks>
+    /// Composed from the <i>current</i> control values rather than from <see cref="CurrentDesign"/>:
+    /// the preview is debounced, so pressing Generate within 150 ms of moving a slider would
+    /// otherwise write the design as it was before the move.
+    /// </remarks>
+    /// <returns>The validated, normalized request.</returns>
+    /// <exception cref="ArgumentException">The output directory, base name or size selection is not
+    /// usable — the same rules <see cref="CanGenerate"/> tests before enabling the button.</exception>
+    public ExportRequest BuildExportRequest()
+        => new ExportRequest(
+            BuildDesign(),
+            OutputDirectory.Trim(),
+            BaseName,
+            SelectedSizes(IcoSizes),
+            SelectedSizes(PngSizes));
+
     /// <summary>
     /// Backs <see cref="Weights"/>. A static property rather than an instance one because
     /// <see cref="SelectedWeight"/>'s initializer reads it, and instance initializers cannot see
@@ -380,6 +493,148 @@ public sealed class MainWindowViewModel : ObservableObject
                 "Preview failed: {0}",
                 exception.Message);
         }
+    }
+
+    /// <summary>Whether the Generate button should be enabled, and why not when it should not.</summary>
+    /// <remarks>
+    /// The base-name rule is <see cref="ExportRequest.IsValidBaseName"/> — the same predicate the
+    /// request constructor enforces, so the button and the constructor can never disagree, and
+    /// neither has to learn the answer by catching an exception per keystroke.
+    /// </remarks>
+    private bool CanGenerate() => DescribeGenerateBlocker() is null;
+
+    private string? DescribeGenerateBlocker()
+    {
+        if (IsExporting)
+        {
+            return "Writing…";
+        }
+
+        string directory = OutputDirectory.Trim();
+        if (directory.Length == 0)
+        {
+            return "Choose an output folder.";
+        }
+
+        if (!Directory.Exists(directory))
+        {
+            return "That folder does not exist.";
+        }
+
+        if (!ExportRequest.IsValidBaseName(BaseName.Trim()))
+        {
+            return "The base name must be a plain file name.";
+        }
+
+        if (!HasAnySize(IcoSizes) && !HasAnySize(PngSizes))
+        {
+            return "Select at least one size.";
+        }
+
+        return null;
+    }
+
+    private void RefreshGenerateState()
+    {
+        GenerateHint = DescribeGenerateBlocker() ?? string.Empty;
+        GenerateCommand.NotifyCanExecuteChanged();
+    }
+
+    private async Task OnBrowseAsync()
+    {
+        string? start = string.IsNullOrWhiteSpace(OutputDirectory) ? null : OutputDirectory.Trim();
+        string? chosen = await _folderPicker.PickFolderAsync(start).ConfigureAwait(true);
+
+        // Null is a cancelled dialog, an unavailable picker, or a folder with no local path. In every
+        // case the right answer is to leave what the user already had.
+        if (chosen is not null)
+        {
+            OutputDirectory = chosen;
+        }
+    }
+
+    private async Task OnGenerateAsync()
+    {
+        IsExporting = true;
+        try
+        {
+            ExportResult result = await _exporter
+                .ExportAsync(BuildExportRequest(), CancellationToken.None)
+                .ConfigureAwait(true);
+
+            StatusText = string.Format(
+                CultureInfo.InvariantCulture,
+                "Wrote {0} file{1} to {2}",
+                result.WrittenFiles.Count,
+                result.WrittenFiles.Count == 1 ? string.Empty : "s",
+                result.OutputDirectory);
+        }
+        catch (Exception exception)
+        {
+            // Deliberately broad. An export touches the file system and a rendering backend, and this
+            // runs inside a command whose task nobody awaits — an escaping exception would be an
+            // unobserved crash rather than a message. The failure is reported, not hidden.
+            StatusText = string.Format(
+                CultureInfo.InvariantCulture,
+                "Export failed: {0}",
+                exception.Message);
+        }
+        finally
+        {
+            IsExporting = false;
+        }
+    }
+
+    private SizeOption[] BuildSizeOptions(int[] offered, int[] selected)
+    {
+        var options = new SizeOption[offered.Length];
+
+        for (int i = 0; i < offered.Length; i++)
+        {
+            options[i] = new SizeOption(offered[i], Array.IndexOf(selected, offered[i]) >= 0);
+
+            // The Generate button's CanExecute depends on at least one box being ticked, and a
+            // CheckBox reports that to its own item, not to this ViewModel.
+            options[i].PropertyChanged += OnSizeOptionChanged;
+        }
+
+        return options;
+    }
+
+    private void OnSizeOptionChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is null or nameof(SizeOption.IsSelected))
+        {
+            RefreshGenerateState();
+        }
+    }
+
+    private static bool HasAnySize(IReadOnlyList<SizeOption> options)
+    {
+        for (int i = 0; i < options.Count; i++)
+        {
+            if (options[i].IsSelected)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static int[] SelectedSizes(IReadOnlyList<SizeOption> options)
+    {
+        var selected = new List<int>(options.Count);
+
+        for (int i = 0; i < options.Count; i++)
+        {
+            if (options[i].IsSelected)
+            {
+                selected.Add(options[i].SizePx);
+            }
+        }
+
+        return selected.ToArray();
     }
 
     private static IconEntry[] BuildCatalog()
