@@ -26,7 +26,7 @@ Row order is the intended build order — `/build` surfaces the topmost `TODO` f
 | FEATURE-1608     | docs/internals.html — maintainer's how-it-works explainer                       | TODO        | docs/plan/FEATURE-1608.md     |
 | FEATURE-4E1F     | App icon studio (.ico + .png generator)                                         | IN PROGRESS | docs/plan/FEATURE-4E1F.md     |
 | - PHASE01        | Project scaffolding & design model                                              | DONE        | (in FEATURE-4E1F.md)          |
-| - PHASE02        | Layout math & Avalonia rasterizer                                               | TODO        | (in FEATURE-4E1F.md)          |
+| - PHASE02        | Layout math & Avalonia rasterizer                                               | DONE        | (in FEATURE-4E1F.md)          |
 | - PHASE03        | ICO container writer & exporter                                                 | TODO        | (in FEATURE-4E1F.md)          |
 | - PHASE04        | Main window: catalog, controls, preview                                         | TODO        | (in FEATURE-4E1F.md)          |
 | - PHASE05        | Output panel & Generate command                                                 | TODO        | (in FEATURE-4E1F.md)          |

@@ -324,7 +324,7 @@ Every phase must hold all of these, not only its own acceptance criteria:
 
 ## PHASE02 — Layout math & Avalonia rasterizer
 
-**Status:** TODO · Branch `feature/feature-4e1f-phase02-rasterizer`
+**Status:** DONE · Branch `feature/feature-4e1f-phase02-rasterizer`
 
 ### Steps
 
