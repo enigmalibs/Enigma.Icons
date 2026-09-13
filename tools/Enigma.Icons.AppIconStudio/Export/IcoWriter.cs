@@ -26,11 +26,12 @@ namespace Enigma.Icons.AppIconStudio.Export;
 /// </para>
 /// <para>
 /// <b>Why two encodings in one file (<see cref="PngFrameThreshold"/>).</b> One uncompressed 256 px
-/// frame is 256 KB on its own, so an all-BMP icon of the studio's seven sizes runs to about 285 KB;
-/// storing just that frame as a PNG brings the same seven to about 105 KB — measured, not estimated.
-/// Below 256 the frames stay BMP, because those are the sizes the oldest rendering paths reach for
-/// and BMP is what they have always read. That the .NET SDK copies a PNG frame into an executable's
-/// icon resource untouched was verified against this toolchain before the format was chosen.
+/// frame is 270,376 bytes on its own, so an all-BMP icon of the studio's seven sizes
+/// (16/24/32/48/64/128/256) comes to 372,526 bytes; storing just that frame as a PNG brings the same
+/// seven to 107,580 — both measured, not estimated. Below 256 the frames stay BMP, because those are
+/// the sizes the oldest rendering paths reach for and BMP is what they have always read. That the
+/// .NET SDK copies a PNG frame into an executable's icon resource untouched was verified against this
+/// toolchain before the format was chosen.
 /// </para>
 /// <para>
 /// <b>The one known cost.</b> GDI+ — <c>System.Drawing.Icon</c>, Windows-only and legacy — cannot

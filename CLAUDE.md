@@ -53,10 +53,11 @@ The test runner is Microsoft.Testing.Platform, selected by `global.json` (SPEC �
 > state, and **FEATURE-74DC has completed 1.0.0 release preparation** — all three packages carry
 > `<Version>1.0.0</Version>` and `<PackageReleaseNotes>`, `RELEASENOTES.md` is filled, and the
 > pack/tag/push runbook lives in **`docs/RELEASE.md`**. The 1.0.0 line is therefore feature-complete.
-> Two post-1.0 items were planned on 2026-07-27; neither bumps a version — 1.0.0 was never
-> published, so they fold into it. **`CODE-REVIEW-1FD4` (review fixes) is `DONE`** — all four phases
-> landed, and its completion docs record the two findings deliberately left as-is, so do not
-> re-raise them. `FEATURE-1608` (`docs/internals.html`) is the one remaining buildable item.
+> **No post-1.0 item bumps a version** — 1.0.0 was never published, so they all fold into it.
+> **`CODE-REVIEW-1FD4` (review fixes) is `DONE`** — all four phases landed, and its completion docs
+> record the two findings deliberately left as-is, so do not re-raise them. **`FEATURE-4E1F` (the
+> app-icon studio, SPEC §18) is `DONE`** — six phases, two new non-packable projects, nothing under
+> `src/` touched. `FEATURE-1608` (`docs/internals.html`) is the one remaining buildable item.
 > FEATURE-6FA1 (the WPF sibling) is the one roadmap row `/build` must **skip**: it is **deferred
 > post-1.0 and must not be built**.
 
@@ -66,13 +67,15 @@ follow*, not to execute: the merge to `main`, `git tag`, the publish `dotnet pac
 never store, commit, or echo it. Note the repo currently has **no `git remote`**, so the publish path
 cannot run until one is added.
 
-Run the gallery — the sample app, and the only way to verify rendering by eye:
+Run the two desktop apps — the gallery is how rendering is verified by eye, the studio is how an
+application icon gets made:
 
 ```bash
 dotnet run --project samples/Enigma.Icons.Avalonia.Gallery
+dotnet run --project tools/Enigma.Icons.AppIconStudio
 ```
 
-It needs a real desktop session (`DISPLAY`/`WAYLAND_DISPLAY`); a headless shell cannot show its window.
+Both need a real desktop session (`DISPLAY`/`WAYLAND_DISPLAY`); a headless shell cannot show a window.
 
 ## Architecture
 
@@ -86,10 +89,15 @@ Enigma.Icons.Avalonia     Geometry/Drawing conversion, markup extensions, the Ic
 
 - `tools/Enigma.Icons.Generator` — non-packable console app; writes the committed `.dat` resources
   and the generated `PhosphorIcon` enum into `src/Enigma.Icons.Phosphor/`.
+- `tools/Enigma.Icons.AppIconStudio` — non-packable Avalonia desktop app (SPEC §18, `FEATURE-4E1F`);
+  composes a rounded plate plus a Phosphor glyph and writes a multi-frame `.ico` and standalone
+  `.png` assets. It consumes the three packages through their public API, exactly as an external
+  consumer would. It is the one project that references `Avalonia.Controls.ColorPicker`.
 - `samples/Enigma.Icons.Avalonia.Gallery` — non-packable Avalonia desktop app; the visual
   verification unit tests cannot provide.
 
-Neither is packable, and neither is referenced by any packable project.
+**None of the three is packable, and none is referenced by any packable project** — `dotnet pack`
+still applies to exactly `Enigma.Icons`, `Enigma.Icons.Phosphor` and `Enigma.Icons.Avalonia`.
 
 ## Hard rules (SPEC §2)
 

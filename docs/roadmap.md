@@ -7,30 +7,30 @@ build specification every plan references is `docs/reference/`-backed `docs/SPEC
 Status vocabulary: `TODO`, `IN PROGRESS`, `DONE`, `ABANDONED`.
 Row order is the intended build order — `/build` surfaces the topmost `TODO` first.
 
-| ID               | Title                                                                           | Status      | Plan                          |
-|------------------|---------------------------------------------------------------------------------|-------------|-------------------------------|
-| FEATURE-21C4     | Solution scaffolding & shared config (git init main, slnx, props, root docs)    | DONE        | docs/plan/FEATURE-21C4.md     |
-| FEATURE-24DD     | Enigma.Icons base library (model, SVG parser, IIconSet, SvgIconSet) + UnitTests | DONE        | docs/plan/FEATURE-24DD.md     |
-| FEATURE-2DDE     | Asset generator tool + generated Phosphor resources and enum                    | DONE        | docs/plan/FEATURE-2DDE.md     |
-| FEATURE-3950     | Enigma.Icons.Phosphor package + UnitTests (full-corpus integrity)               | DONE        | docs/plan/FEATURE-3950.md     |
-| FEATURE-3ADD     | Enigma.Icons.Avalonia (extensions, markup extensions, Icon control) + UnitTests | DONE        | docs/plan/FEATURE-3ADD.md     |
-| FEATURE-469B     | Icon gallery sample app                                                         | DONE        | docs/plan/FEATURE-469B.md     |
-| FEATURE-718F     | Documentation (root + 3 packed READMEs)                                         | DONE        | docs/plan/FEATURE-718F.md     |
-| FEATURE-74DC     | Release preparation & NuGet publish runbook (v1.0.0 ×3)                         | DONE        | docs/plan/FEATURE-74DC.md     |
-| FEATURE-6FA1     | Enigma.Icons.Wpf renderer package — **DEFERRED post-1.0, do not build yet**     | TODO        | docs/plan/FEATURE-6FA1.md     |
-| CODE-REVIEW-1FD4 | Post-1.0 review fixes (6 accepted findings, 4 phases)                           | DONE        | docs/plan/CODE-REVIEW-1FD4.md |
-| - PHASE01        | [Medium] Icon.Render re-parses geometry every render pass                       | DONE        | (in CODE-REVIEW-1FD4.md)      |
-| - PHASE02        | [Medium] PhosphorIconSet variant lookup diverges from the IIconSet contract     | DONE        | (in CODE-REVIEW-1FD4.md)      |
-| - PHASE03        | [Low] SvgIconSet.FromDirectory follows symlinked .svg files out of its root     | DONE        | (in CODE-REVIEW-1FD4.md)      |
-| - PHASE04        | [Low] Documentation and cosmetic sweep (byte count, IconNames doc, Array.Empty) | DONE        | (in CODE-REVIEW-1FD4.md)      |
-| FEATURE-1608     | docs/internals.html — maintainer's how-it-works explainer                       | TODO        | docs/plan/FEATURE-1608.md     |
-| FEATURE-4E1F     | App icon studio (.ico + .png generator)                                         | IN PROGRESS | docs/plan/FEATURE-4E1F.md     |
-| - PHASE01        | Project scaffolding & design model                                              | DONE        | (in FEATURE-4E1F.md)          |
-| - PHASE02        | Layout math & Avalonia rasterizer                                               | DONE        | (in FEATURE-4E1F.md)          |
-| - PHASE03        | ICO container writer & exporter                                                 | DONE        | (in FEATURE-4E1F.md)          |
-| - PHASE04        | Main window: catalog, controls, preview                                         | DONE        | (in FEATURE-4E1F.md)          |
-| - PHASE05        | Output panel & Generate command                                                 | DONE        | (in FEATURE-4E1F.md)          |
-| - PHASE06        | Documentation (SPEC §18, READMEs, CLAUDE.md)                                    | TODO        | (in FEATURE-4E1F.md)          |
+| ID               | Title                                                                           | Status | Plan                          |
+|------------------|---------------------------------------------------------------------------------|--------|-------------------------------|
+| FEATURE-21C4     | Solution scaffolding & shared config (git init main, slnx, props, root docs)    | DONE   | docs/plan/FEATURE-21C4.md     |
+| FEATURE-24DD     | Enigma.Icons base library (model, SVG parser, IIconSet, SvgIconSet) + UnitTests | DONE   | docs/plan/FEATURE-24DD.md     |
+| FEATURE-2DDE     | Asset generator tool + generated Phosphor resources and enum                    | DONE   | docs/plan/FEATURE-2DDE.md     |
+| FEATURE-3950     | Enigma.Icons.Phosphor package + UnitTests (full-corpus integrity)               | DONE   | docs/plan/FEATURE-3950.md     |
+| FEATURE-3ADD     | Enigma.Icons.Avalonia (extensions, markup extensions, Icon control) + UnitTests | DONE   | docs/plan/FEATURE-3ADD.md     |
+| FEATURE-469B     | Icon gallery sample app                                                         | DONE   | docs/plan/FEATURE-469B.md     |
+| FEATURE-718F     | Documentation (root + 3 packed READMEs)                                         | DONE   | docs/plan/FEATURE-718F.md     |
+| FEATURE-74DC     | Release preparation & NuGet publish runbook (v1.0.0 ×3)                         | DONE   | docs/plan/FEATURE-74DC.md     |
+| FEATURE-6FA1     | Enigma.Icons.Wpf renderer package — **DEFERRED post-1.0, do not build yet**     | TODO   | docs/plan/FEATURE-6FA1.md     |
+| CODE-REVIEW-1FD4 | Post-1.0 review fixes (6 accepted findings, 4 phases)                           | DONE   | docs/plan/CODE-REVIEW-1FD4.md |
+| - PHASE01        | [Medium] Icon.Render re-parses geometry every render pass                       | DONE   | (in CODE-REVIEW-1FD4.md)      |
+| - PHASE02        | [Medium] PhosphorIconSet variant lookup diverges from the IIconSet contract     | DONE   | (in CODE-REVIEW-1FD4.md)      |
+| - PHASE03        | [Low] SvgIconSet.FromDirectory follows symlinked .svg files out of its root     | DONE   | (in CODE-REVIEW-1FD4.md)      |
+| - PHASE04        | [Low] Documentation and cosmetic sweep (byte count, IconNames doc, Array.Empty) | DONE   | (in CODE-REVIEW-1FD4.md)      |
+| FEATURE-1608     | docs/internals.html — maintainer's how-it-works explainer                       | TODO   | docs/plan/FEATURE-1608.md     |
+| FEATURE-4E1F     | App icon studio (.ico + .png generator)                                         | DONE   | docs/plan/FEATURE-4E1F.md     |
+| - PHASE01        | Project scaffolding & design model                                              | DONE   | (in FEATURE-4E1F.md)          |
+| - PHASE02        | Layout math & Avalonia rasterizer                                               | DONE   | (in FEATURE-4E1F.md)          |
+| - PHASE03        | ICO container writer & exporter                                                 | DONE   | (in FEATURE-4E1F.md)          |
+| - PHASE04        | Main window: catalog, controls, preview                                         | DONE   | (in FEATURE-4E1F.md)          |
+| - PHASE05        | Output panel & Generate command                                                 | DONE   | (in FEATURE-4E1F.md)          |
+| - PHASE06        | Documentation (SPEC §18, READMEs, CLAUDE.md)                                    | DONE   | (in FEATURE-4E1F.md)          |
 
 `FEATURE-21C4` … `FEATURE-1608` are single-phase `FEATURE`s — no phase rows. `CODE-REVIEW-1FD4` is
 multi-phase: one phase per accepted review finding, ordered highest-severity first. `FEATURE-4E1F`
