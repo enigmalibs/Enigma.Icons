@@ -173,7 +173,18 @@
           <Border Classes="pane">
             <StackPanel Spacing="6">
 
-              <TextBlock Classes="section" Text="Glyph" Margin="0,0,0,2" />
+              <!-- The section label and Reset share one line. Reset lives here, on the design pane,
+                   rather than beside Generate: the pinned output panel holds the primary action, and
+                   a "throw my work away" button one misclick from it is a trap. -->
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0" Classes="section" Text="Glyph" Margin="0,0,0,2" />
+                <Button Grid.Column="1"
+                        Content="Reset"
+                        Padding="14,2"
+                        VerticalAlignment="Center"
+                        Command="{Binding ResetCommand}"
+                        ToolTip.Tip="Restore the icon, colours, sizes, base name and size selection to the values the window opened with. The output folder is kept." />
+              </Grid>
 
               <StackPanel Orientation="Horizontal" Spacing="10">
                 <TextBlock Classes="label" Text="Weight" />

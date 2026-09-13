@@ -31,7 +31,7 @@ Row order is the intended build order — `/build` surfaces the topmost `TODO` f
 | - PHASE04        | Main window: catalog, controls, preview                                         | DONE   | (in FEATURE-4E1F.md)          |
 | - PHASE05        | Output panel & Generate command                                                 | DONE   | (in FEATURE-4E1F.md)          |
 | - PHASE06        | Documentation (SPEC §18, READMEs, CLAUDE.md)                                    | DONE   | (in FEATURE-4E1F.md)          |
-| FEATURE-0DD4     | Reset button in the app icon studio                                             | TODO   | docs/plan/FEATURE-0DD4.md     |
+| FEATURE-0DD4     | Reset button in the app icon studio                                             | DONE   | docs/plan/FEATURE-0DD4.md     |
 
 `FEATURE-21C4` … `FEATURE-1608` and `FEATURE-0DD4` are single-phase `FEATURE`s — no phase rows.
 `CODE-REVIEW-1FD4` is multi-phase: one phase per accepted review finding, ordered highest-severity

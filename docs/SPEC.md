@@ -1657,15 +1657,22 @@ Two columns. Left: a virtualized, debounce-filtered list of all 1,512 icons, eac
 glyph in the currently selected weight. Right, scrolling: the live 256 px preview on a checkerboard —
 transparency is the part worth seeing before writing — with a 64/48/32/16 strip beside it, over the
 design controls (weight, glyph colour, glyph size, fill mode, two colours, gradient angle, corner
-radius). Right, **pinned below the scroll**: the output panel — folder and *Browse…*, base name, the
-ICO and PNG size check-lists, *Generate*, and a hint naming whatever is blocking it. A status line
-spans the window.
+radius), whose header row carries a right-aligned *Reset*. Right, **pinned below the scroll**: the
+output panel — folder and *Browse…*, base name, the ICO and PNG size check-lists, *Generate*, and a
+hint naming whatever is blocking it. A status line spans the window.
 
 - **The preview is the export.** Every image on screen comes from the same `IIconRasterizer`, at the
   size it will be written; `Generate` rebuilds the design from the **live** control values rather than
   the debounced preview, so pressing it straight after a slider move writes what was just set.
 - Two selection states: `SelectedIcon` is what the list highlights and goes null when a filter hides
   the row; `ActiveIcon` is what the design uses and never does.
+- **Every startup value lives in `StudioDefaults`**, read by the ViewModel's property initializers
+  *and* by `Reset` — a reset that re-stated those literals would be a second source of truth, and the
+  two drift the first time a default is tuned. Which sizes start ticked travels with the options
+  instead, as `SizeOption.IsSelectedByDefault`. `Reset` restores the design, the base name and both
+  size lists, clears the search box, and renders **synchronously** rather than through the debounce;
+  it deliberately **keeps the output folder**, which is a session destination rather than a design
+  value.
 - Preview bitmaps are **not disposed** — an `Image` draws the `Bitmap` it holds on the render thread,
   so disposing the previous one is a race with a native surface, not a tidy-up. The 150 ms debounce
   bounds the churn.
