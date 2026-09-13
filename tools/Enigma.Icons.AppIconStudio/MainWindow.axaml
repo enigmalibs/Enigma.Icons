@@ -1,0 +1,370 @@
+<!-- ONE icons namespace declaration reaches the control and both markup extensions: the two
+     XmlnsDefinition attributes in Enigma.Icons.Avalonia map Enigma.Icons.Avalonia and
+     Enigma.Icons.Avalonia.Markup onto this single URI (SPEC §10.3). -->
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ei="https://github.com/josueclement/Enigma.Icons"
+        xmlns:vm="using:Enigma.Icons.AppIconStudio"
+        x:Class="Enigma.Icons.AppIconStudio.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Enigma.Icons — App Icon Studio"
+        Width="1180"
+        Height="820"
+        MinWidth="900"
+        MinHeight="620">
+
+  <Window.Resources>
+    <!-- The checkerboard behind every preview. An app icon is transparent outside its rounded
+         corners, and against a flat panel that transparency is invisible — which is exactly the part
+         worth seeing before the file is written. Absolute DestinationRect + TileMode="Tile" is what
+         makes the 16 px cell repeat instead of stretching. -->
+    <DrawingBrush x:Key="CheckerboardBrush"
+                  TileMode="Tile"
+                  DestinationRect="0,0,16,16"
+                  Stretch="None">
+      <DrawingBrush.Drawing>
+        <DrawingGroup>
+          <GeometryDrawing Brush="#FFFFFFFF" Geometry="M0,0 H16 V16 H0 Z" />
+          <GeometryDrawing Brush="#FFE3E3E6" Geometry="M0,0 H8 V8 H0 Z M8,8 H16 V16 H8 Z" />
+        </DrawingGroup>
+      </DrawingBrush.Drawing>
+    </DrawingBrush>
+  </Window.Resources>
+
+  <Window.Styles>
+    <Style Selector="TextBlock.section">
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Opacity" Value="0.75" />
+      <Setter Property="Margin" Value="0,8,0,2" />
+    </Style>
+
+    <Style Selector="TextBlock.label">
+      <Setter Property="Opacity" Value="0.7" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="MinWidth" Value="96" />
+    </Style>
+
+    <Style Selector="TextBlock.caption">
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="Opacity" Value="0.65" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="TextBlock.value">
+      <Setter Property="Opacity" Value="0.7" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="MinWidth" Value="52" />
+    </Style>
+
+    <Style Selector="Border.pane">
+      <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Padding" Value="12" />
+    </Style>
+  </Window.Styles>
+
+  <Grid RowDefinitions="*,Auto" ColumnDefinitions="320,*">
+
+    <!-- ══ Left — the icon catalog ═══════════════════════════════════════════════════════════ -->
+    <Grid Grid.Row="0" Grid.Column="0" Margin="12,12,6,6" RowDefinitions="Auto,*">
+
+      <TextBox Grid.Row="0"
+               x:Name="SearchBox"
+               Margin="0,0,0,8"
+               PlaceholderText="Search 1,512 icons…"
+               Text="{Binding SearchText}" />
+
+      <Border Grid.Row="1" Classes="pane" Padding="2">
+        <Panel>
+          <!-- A flat virtualized list: 1,512 rows, only a screenful realized. Each row previews the
+               glyph in the CURRENTLY selected weight, bound up to the ViewModel, so changing the
+               weight repaints the realized rows through Icon's AffectsRender registration instead of
+               rebuilding the list (SPEC §10.2). -->
+          <ListBox ItemsSource="{Binding FilteredIcons}"
+                   SelectedItem="{Binding SelectedIcon}"
+                   IsVisible="{Binding HasResults}"
+                   Background="Transparent"
+                   BorderThickness="0">
+            <ListBox.ItemsPanel>
+              <ItemsPanelTemplate>
+                <VirtualizingStackPanel />
+              </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:IconEntry">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                  <ei:Icon Kind="{Binding Kind}"
+                           Size="20"
+                           VerticalAlignment="Center"
+                           Weight="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).SelectedWeight.Weight}" />
+                  <TextBlock Text="{Binding Name}"
+                             VerticalAlignment="Center"
+                             TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+
+          <TextBlock HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                     Opacity="0.7"
+                     IsVisible="{Binding !HasResults}"
+                     Text="{Binding EmptyMessage}" />
+        </Panel>
+      </Border>
+    </Grid>
+
+    <!-- ══ Right — preview and controls above, the output panel pinned below ═════════════════ -->
+    <Grid Grid.Row="0" Grid.Column="1" Margin="6,12,12,6" RowDefinitions="*,Auto">
+
+      <ScrollViewer Grid.Row="0"
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="10">
+
+          <!-- ── Preview ─────────────────────────────────────────────────────────────────── -->
+          <Border Classes="pane">
+            <StackPanel Orientation="Horizontal" Spacing="24">
+
+              <Border Width="256"
+                      Height="256"
+                      CornerRadius="4"
+                      Background="{StaticResource CheckerboardBrush}"
+                      BorderThickness="1"
+                      BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}">
+                <Image Source="{Binding PreviewImage}" Width="256" Height="256" />
+              </Border>
+
+              <StackPanel Spacing="8" VerticalAlignment="Top">
+                <TextBlock Classes="section" Text="At the sizes that matter" Margin="0,0,0,4" />
+
+                <!-- Rendered at their real pixel size and shown at it: a glyph scale that looks
+                     generous at 256 px is often a smudge at 16, and this strip is where that shows
+                     before the file is written. -->
+                <ItemsControl ItemsSource="{Binding Thumbnails}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <StackPanel Orientation="Horizontal" Spacing="14" />
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:IconThumbnail">
+                      <StackPanel Spacing="4" VerticalAlignment="Bottom">
+                        <Border Background="{StaticResource CheckerboardBrush}"
+                                HorizontalAlignment="Center"
+                                BorderThickness="1"
+                                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}">
+                          <Image Source="{Binding Image}"
+                                 Width="{Binding SizePx}"
+                                 Height="{Binding SizePx}" />
+                        </Border>
+                        <TextBlock Classes="caption" Text="{Binding SizePx, StringFormat='{}{0} px'}" />
+                      </StackPanel>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+
+            </StackPanel>
+          </Border>
+
+          <!-- ── Design controls ─────────────────────────────────────────────────────────── -->
+          <Border Classes="pane">
+            <StackPanel Spacing="6">
+
+              <!-- The section label and Reset share one line. Reset lives here, on the design pane,
+                   rather than beside Generate: the pinned output panel holds the primary action, and
+                   a "throw my work away" button one misclick from it is a trap. -->
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0" Classes="section" Text="Glyph" Margin="0,0,0,2" />
+                <Button Grid.Column="1"
+                        Content="Reset"
+                        Padding="14,2"
+                        VerticalAlignment="Center"
+                        Command="{Binding ResetCommand}"
+                        ToolTip.Tip="Restore the icon, colours, sizes, base name and size selection to the values the window opened with. The output folder is kept." />
+              </Grid>
+
+              <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Classes="label" Text="Weight" />
+                <ComboBox Width="150"
+                          ItemsSource="{Binding Weights}"
+                          SelectedItem="{Binding SelectedWeight}">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:WeightOption">
+                      <TextBlock Text="{Binding Name}" />
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <TextBlock Classes="label" Text="Colour" MinWidth="52" Margin="14,0,0,0" />
+                <!-- A real picker, not a preset list: an icon on a pale plate needs a dark glyph, and
+                     a fixed palette would make half the plate colours unusable. -->
+                <ColorPicker Color="{Binding GlyphColor}" />
+              </StackPanel>
+
+              <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Classes="label" Text="Size" />
+                <Slider Width="240"
+                        Minimum="0.2"
+                        Maximum="1.0"
+                        TickFrequency="0.01"
+                        IsSnapToTickEnabled="True"
+                        VerticalAlignment="Center"
+                        Value="{Binding GlyphScale}" />
+                <TextBlock Classes="value" Text="{Binding GlyphScale, StringFormat='{}{0:P0}'}" />
+              </StackPanel>
+
+              <TextBlock Classes="section" Text="Plate" />
+
+              <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Classes="label" Text="Fill" />
+                <ComboBox Width="150"
+                          ItemsSource="{Binding FillModes}"
+                          SelectedItem="{Binding SelectedFillMode}">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:FillModeOption">
+                      <TextBlock Text="{Binding Name}" />
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <TextBlock Classes="label" Text="Colour" MinWidth="52" Margin="14,0,0,0" />
+                <ColorPicker Color="{Binding PrimaryColor}" />
+
+                <TextBlock Classes="label"
+                           Text="Second"
+                           MinWidth="52"
+                           Margin="14,0,0,0"
+                           IsEnabled="{Binding IsGradient}" />
+                <ColorPicker Color="{Binding SecondaryColor}" IsEnabled="{Binding IsGradient}" />
+              </StackPanel>
+
+              <!-- Angle and corners share a row so the whole design pane fits above the pinned
+                   output panel at the window's default height. -->
+              <StackPanel Orientation="Horizontal" Spacing="10">
+
+                <StackPanel Orientation="Horizontal" Spacing="10" IsEnabled="{Binding IsGradient}">
+                  <TextBlock Classes="label" Text="Angle" />
+                  <!-- 0° runs left to right, 90° top to bottom; 45° is the corner-to-corner default. -->
+                  <Slider Width="190"
+                          Minimum="0"
+                          Maximum="360"
+                          TickFrequency="1"
+                          IsSnapToTickEnabled="True"
+                          VerticalAlignment="Center"
+                          Value="{Binding GradientAngle}" />
+                  <TextBlock Classes="value" Text="{Binding GradientAngle, StringFormat='{}{0:0}°'}" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Spacing="10" Margin="14,0,0,0">
+                  <TextBlock Classes="label" Text="Corners" MinWidth="60" />
+                  <!-- 0 is a square, 0.5 a circle; 22 % is the radius of the reference plate. -->
+                  <Slider Width="190"
+                          Minimum="0"
+                          Maximum="0.5"
+                          TickFrequency="0.01"
+                          IsSnapToTickEnabled="True"
+                          VerticalAlignment="Center"
+                          Value="{Binding CornerRadiusRatio}" />
+                  <TextBlock Classes="value" Text="{Binding CornerRadiusRatio, StringFormat='{}{0:P0}'}" />
+                </StackPanel>
+
+              </StackPanel>
+
+            </StackPanel>
+          </Border>
+
+        </StackPanel>
+      </ScrollViewer>
+
+      <!-- ── Output — pinned, never scrolled out of reach ──────────────────────────────────
+           This pane is the whole point of the window, so it sits outside the scroll viewer: a
+           Generate button you have to go looking for is a Generate button that gets missed. -->
+      <Border Grid.Row="1" Classes="pane" Margin="0,10,0,0">
+        <StackPanel Spacing="6">
+
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock Classes="label" Text="Folder" />
+            <TextBox Width="430"
+                     VerticalAlignment="Center"
+                     PlaceholderText="Pick a folder to write into…"
+                     Text="{Binding OutputDirectory}" />
+            <Button Content="Browse…" Command="{Binding BrowseCommand}" VerticalAlignment="Center" />
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock Classes="label" Text="Base name" />
+            <TextBox Width="200" VerticalAlignment="Center" Text="{Binding BaseName}" />
+            <!-- Exactly the shape Enigma.MarkdownEditor consumes: app.ico for ApplicationIcon and
+                 the window, app-256.png for the About and splash views. -->
+            <TextBlock Classes="caption"
+                       VerticalAlignment="Center"
+                       Text="{Binding BaseName, StringFormat='{}writes {0}.ico and {0}-256.png'}" />
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock Classes="label" Text="ICO frames" />
+            <ItemsControl ItemsSource="{Binding IcoSizes}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel Orientation="Horizontal" ItemSpacing="14" LineSpacing="4" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:SizeOption">
+                  <CheckBox IsChecked="{Binding IsSelected}"
+                            Content="{Binding SizePx, StringFormat='{}{0}'}" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <TextBlock Classes="label" Text="PNG sizes" />
+            <ItemsControl ItemsSource="{Binding PngSizes}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel Orientation="Horizontal" ItemSpacing="14" LineSpacing="4" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:SizeOption">
+                  <CheckBox IsChecked="{Binding IsSelected}"
+                            Content="{Binding SizePx, StringFormat='{}{0}'}" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+
+          <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,4,0,0">
+            <Button Content="Generate"
+                    Classes="accent"
+                    Padding="24,6"
+                    Command="{Binding GenerateCommand}" />
+            <!-- A disabled button with no explanation is a guessing game, and every run starts in
+                 the "no folder chosen yet" state. -->
+            <TextBlock MinWidth="0"
+                       Opacity="0.75"
+                       VerticalAlignment="Center"
+                       Text="{Binding GenerateHint}" />
+          </StackPanel>
+
+        </StackPanel>
+      </Border>
+
+    </Grid>
+
+    <!-- ══ Status line ═══════════════════════════════════════════════════════════════════════ -->
+    <Border Grid.Row="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Padding="14,8"
+            BorderThickness="0,1,0,0"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+      <TextBlock Opacity="0.8" Text="{Binding StatusText}" TextTrimming="CharacterEllipsis" />
+    </Border>
+
+  </Grid>
+</Window>

@@ -93,11 +93,21 @@ Enigma.Icons/                                  git repo, default branch: main
 ├─ tests/
 │   ├─ Enigma.Icons.UnitTests/                 net10.0 · xunit.v3
 │   ├─ Enigma.Icons.Phosphor.UnitTests/        net10.0 · xunit.v3
-│   └─ Enigma.Icons.Avalonia.UnitTests/        net10.0 · xunit.v3 + Avalonia.Headless.XUnit
+│   ├─ Enigma.Icons.Avalonia.UnitTests/        net10.0 · xunit.v3 + Avalonia.Headless.XUnit
+│   └─ Enigma.Icons.AppIconStudio.UnitTests/   net10.0 · xunit.v3 + Avalonia.Headless.XUnit  (§18)
 ├─ samples/
 │   └─ Enigma.Icons.Avalonia.Gallery/          net10.0 · NOT packable
 ├─ tools/
-│   └─ Enigma.Icons.Generator/                 net10.0 · NOT packable
+│   ├─ Enigma.Icons.Generator/                 net10.0 · NOT packable
+│   └─ Enigma.Icons.AppIconStudio/             net10.0 · NOT packable  (§18, post-1.0)
+│       ├─ Enigma.Icons.AppIconStudio.csproj · README.md · app.manifest · .editorconfig
+│       ├─ Program.cs · App.axaml(.cs) · MainWindow.axaml(.cs) · MainWindowViewModel.cs
+│       ├─ IconEntry.cs · IconThumbnail.cs · WeightOption.cs · FillModeOption.cs · SizeOption.cs
+│       ├─ Design/     PlateFillMode.cs · PlateFill.cs · IconDesign.cs
+│       ├─ Rendering/  IconLayout.cs · IIconRasterizer.cs · AvaloniaIconRasterizer.cs
+│       ├─ Export/     IcoFrameFormat.cs · IcoFrame.cs · IcoWriter.cs ·
+│       │              ExportRequest.cs · ExportResult.cs · IconExporter.cs
+│       └─ Services/   IFolderPicker.cs · AvaloniaFolderPicker.cs
 └─ docs/
     ├─ roadmap.md · SPEC.md · RELEASE.md
     ├─ plan/<ID>.md · done/<ID>.md
@@ -289,8 +299,9 @@ Do not add any property not listed. In particular `ImplicitUsings` is set **per 
 </Solution>
 ```
 
-The end state has **eight** `<Project>` entries — 3 `src` + 3 `tests` + 1 `samples` + 1 `tools`.
-Use that number; do not recount.
+The 1.0.0 end state has **eight** `<Project>` entries — 3 `src` + 3 `tests` + 1 `samples` +
+1 `tools`. Use that number; do not recount. Post-1.0, `FEATURE-4E1F` appended two more (see the
+table below), so the committed file now holds **ten**.
 
 **Incremental-growth contract.** The slnx must never reference a project that does not exist yet,
 so it must stay buildable at every step. Each work item appends only its own entries:
@@ -304,10 +315,12 @@ so it must stay buildable at every step. Each work item appends only its own ent
 | FEATURE-3ADD | `src/Enigma.Icons.Avalonia`, `tests/Enigma.Icons.Avalonia.UnitTests` |
 | FEATURE-469B | `samples/Enigma.Icons.Avalonia.Gallery` → reaches the §3.4 end state (8 entries) |
 | FEATURE-718F, FEATURE-74DC | nothing |
+| FEATURE-4E1F (post-1.0) | `tools/Enigma.Icons.AppIconStudio`, `tests/Enigma.Icons.AppIconStudio.UnitTests` → 10 entries |
 
-The eight-entry end state is final **for the 1.0.0 line**. The deferred `FEATURE-6FA1` (WPF) would
-extend the table post-1.0 with `src/Enigma.Icons.Wpf` and `tests/Enigma.Icons.Wpf.UnitTests`; that is
-expected and is not a contradiction of "end state".
+The eight-entry end state is final **for the 1.0.0 line**. Post-1.0 growth is expected and is not a
+contradiction of "end state": `FEATURE-4E1F` has already added the two non-packable app-icon-studio
+entries above, and the deferred `FEATURE-6FA1` (WPF) would add `src/Enigma.Icons.Wpf` and
+`tests/Enigma.Icons.Wpf.UnitTests`.
 
 ### 3.5 `.gitignore` / `.editorconfig`
 
@@ -1537,3 +1550,149 @@ embeds them.
 - **Visual regression / bitmap baseline tests** — not selected. The gallery app covers visual
   verification more cheaply and without cross-platform renderer flakiness.
 - **Coverage thresholds, CI pipelines, `dotnet format` gates** — not in scope.
+
+---
+
+## 18. `tools/Enigma.Icons.AppIconStudio` — the app-icon studio
+
+`net10.0`, `WinExe`, `<IsPackable>false</IsPackable>`, Avalonia desktop app. Added post-1.0 by
+`FEATURE-4E1F`. Not referenced by any packable project, and — like the generator and the gallery — it
+ships nothing.
+
+Its job is to **compose an application icon and write the assets an app actually consumes**: a
+rounded plate (solid colour or a two-stop linear gradient) with a Phosphor glyph in a chosen colour
+on top, exported as one multi-frame `.ico` plus standalone `.png` files.
+
+### 18.1 Why both an `.ico` and PNGs
+
+An app needs two different things, and the `.ico` cannot be both:
+
+| Asset | Consumed by |
+|---|---|
+| `<base>.ico` | `<ApplicationIcon>` in the csproj — the `.exe`'s Explorer and taskbar icon — and `Window.Icon` |
+| `<base>-256.png` | An About dialog or a splash window. Which frame a decoder picks out of an `.ico` is unspecified, so a real bitmap is the safe asset. |
+| `<base>-<n>.png` | Linux `.desktop` entries, store listings, READMEs |
+
+The naming is the contract: `<base>.ico` and `<base>-<size>.png`, so the output drops straight into an
+`Assets/` folder.
+
+### 18.2 The composition model (`Design/`)
+
+- `PlateFillMode` — `Solid` or `LinearGradient`.
+- `PlateFill` — immutable: mode, primary colour, secondary colour, angle in degrees clockwise from
+  left-to-right. Any finite angle is accepted and wrapped into 0–360; `NaN` and infinity are rejected.
+  The secondary colour is kept even in `Solid` mode, so toggling the selector does not lose it.
+- `IconDesign` — immutable: icon, weight, glyph colour, plate, corner-radius ratio (0.0–0.5, default
+  **0.22**; 0.5 is a circle) and glyph scale (0.2–1.0, default **0.60**). Range checks are phrased as
+  negated comparisons so `NaN` is rejected rather than admitted, matching `IconViewBox`.
+
+Colours are `Avalonia.Media.Color`: a plain struct needing no platform, and what `ColorPicker` binds
+to.
+
+### 18.3 Rendering (`Rendering/`)
+
+`IconLayout` is pure arithmetic over Avalonia value types — no render backend, so it is unit-testable
+on its own:
+
+- `PlateRect(sizePx, ratio)` — the plate is always **edge to edge**; a platform's own margin is its
+  business, and baking one in would shrink the artwork twice.
+- `GlyphTransform(viewBox, sizePx, glyphScale)` — `Icon.Render`'s `Stretch.Uniform` arithmetic
+  (§10.2) against the centred `sizePx × glyphScale` square. **If §10.2's centring ever changes, this
+  is the method that must follow.**
+- `GradientLine(angleDegrees)` — through the plate centre, half-length `(|cos θ| + |sin θ|) / 2`,
+  which is what puts 45° exactly on two opposite corners and keeps the colour range constant as the
+  angle turns.
+
+`IIconRasterizer` exposes `RenderPng` and `RenderBgra`; `AvaloniaIconRasterizer` implements both over
+one `RenderTargetBitmap` pass at 96 DPI, so one drawing unit is one output pixel.
+
+- **The glyph is painted through `IconGlyphExtensions.ToDrawing`** — the same conversion the shipped
+  `Icon` control uses. Duotone, per-layer opacity, strokes and `fill="none"` therefore behave
+  identically, with no second implementation to keep in step.
+- **Each size is rendered natively**, never downsampled from a master, so a 16 px frame's corner
+  radius and stroke weights are resolved by the rasterizer rather than blurred by a resample.
+- `RenderBgra` copies through a `WriteableBitmap` declared `Bgra8888`/**`Unpremul`**: the render
+  target is premultiplied, and reading it directly would darken every part-transparent edge pixel
+  once an ICO BMP frame reinterpreted it as straight alpha.
+- `Bitmap.Save(Stream, int?)` is **obsolete** in Avalonia 12.1 and would fail the zero-warning build
+  (`CS0618`). Use `Save(Stream, BitmapEncoderOptions)` with `PngBitmapEncoderOptions`.
+
+### 18.4 The `.ico` container (`Export/`)
+
+`IcoWriter` is pure byte assembly — no Avalonia, no file system:
+
+```
+ICONDIR        reserved u16 = 0 · type u16 = 1 · count u16 = N
+ICONDIRENTRY   bWidth u8 (0 means 256) · bHeight u8 (0 means 256) · bColorCount u8 = 0 ·
+    x N        bReserved u8 = 0 · wPlanes u16 = 1 · wBitCount u16 = 32 ·
+               dwBytesInRes u32 · dwImageOffset u32
+payloads       in the same order as the entries, ascending by size
+```
+
+**`PngFrameThreshold = 256`.** A frame of 256 px or more is stored as a **PNG file**, anything smaller
+as a **32-bpp BMP DIB** (`BITMAPINFOHEADER` with `biHeight = 2 × edge`, bottom-up BGRA rows, then an
+all-zero AND mask — with 32-bpp alpha the mask is redundant, and one that disagreed would fringe the
+rounded corners). Measured, for the studio's seven-size set: **372,526 bytes all-BMP** against
+**107,580 bytes hybrid**. (`Enigma.MarkdownEditor`'s existing four-frame all-BMP icon is 285,478
+bytes, which the same arithmetic reproduces exactly — a useful check on the DIB layout.)
+
+Two facts verified against this toolchain, not assumed:
+
+- The .NET 10 SDK's `<ApplicationIcon>` copies a PNG frame into the executable's icon resource
+  **verbatim**, and Windows renders it.
+- **GDI+ (`System.Drawing.Icon`) cannot decode a PNG frame** and falls back to the largest BMP one, so
+  such a caller sees 128 px as the icon's top size. The Windows shell, WIC, Skia (so Avalonia) and the
+  SDK are unaffected; an app wanting a large bitmap should use the standalone PNGs. Moving
+  `PngFrameThreshold` is the single lever if that trade ever has to change.
+
+`ExportRequest` validates and normalizes on construction — sizes de-duplicated and sorted ascending,
+ICO sizes capped at 256, PNG sizes at 2048, base name required to be a plain file name
+(`IsValidBaseName`, which the UI reuses so the button and the constructor cannot disagree).
+`IconExporter` **renders every frame before opening a file**, so a rendering failure leaves the output
+directory untouched; only the writes are asynchronous, because rasterizing is UI-thread work.
+
+### 18.5 UI
+
+Two columns. Left: a virtualized, debounce-filtered list of all 1,512 icons, each row previewing its
+glyph in the currently selected weight. Right, scrolling: the live 256 px preview on a checkerboard —
+transparency is the part worth seeing before writing — with a 64/48/32/16 strip beside it, over the
+design controls (weight, glyph colour, glyph size, fill mode, two colours, gradient angle, corner
+radius), whose header row carries a right-aligned *Reset*. Right, **pinned below the scroll**: the
+output panel — folder and *Browse…*, base name, the ICO and PNG size check-lists, *Generate*, and a
+hint naming whatever is blocking it. A status line spans the window.
+
+- **The preview is the export.** Every image on screen comes from the same `IIconRasterizer`, at the
+  size it will be written; `Generate` rebuilds the design from the **live** control values rather than
+  the debounced preview, so pressing it straight after a slider move writes what was just set.
+- Two selection states: `SelectedIcon` is what the list highlights and goes null when a filter hides
+  the row; `ActiveIcon` is what the design uses and never does.
+- **Every startup value lives in `StudioDefaults`**, read by the ViewModel's property initializers
+  *and* by `Reset` — a reset that re-stated those literals would be a second source of truth, and the
+  two drift the first time a default is tuned. Which sizes start ticked travels with the options
+  instead, as `SizeOption.IsSelectedByDefault`. `Reset` restores the design, the base name and both
+  size lists, clears the search box, and renders **synchronously** rather than through the debounce;
+  it deliberately **keeps the output folder**, which is a session destination rather than a design
+  value.
+- Preview bitmaps are **not disposed** — an `Image` draws the `Bitmap` it holds on the render thread,
+  so disposing the previous one is a race with a native surface, not a tidy-up. The 150 ms debounce
+  bounds the churn.
+- MVVM is the house explicit CommunityToolkit style, exactly as §11 requires of the gallery: no
+  generator attributes, `field` + `SetProperty`, get-only command properties.
+  `AvaloniaUseCompiledBindingsByDefault` is `true`, and `AVLN3001` is suppressed by a project-local
+  `.editorconfig` for the same reason the gallery suppresses it.
+- `App.axaml` carries a second `StyleInclude` —
+  `avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml`. The Fluent theme package does
+  **not** merge the ColorPicker control themes, and without it every picker renders untemplated.
+
+### 18.6 Dependencies and testing
+
+One package pin joins §3.3's version-coupled Avalonia group: **`Avalonia.Controls.ColorPicker`
+12.1.0**, referenced by this project alone. Because the project is not packable, nothing enters a
+`.nupkg` dependency graph, **§2.10 is untouched**, and `THIRD-PARTY-NOTICES.md` needs no edit.
+
+`tests/Enigma.Icons.AppIconStudio.UnitTests` mirrors §12's split: the design model, the layout maths,
+the ICO container and the export orchestration are pure and tested without a platform; the rasterizer
+and the ViewModel run under `Avalonia.Headless` with **`UseHeadlessDrawing = false`** plus
+`.UseSkia()`, which is what makes real pixels available to assert on. The window itself is verified by
+running it, per §11's precedent — and §1's rule stands: `docs/img/gallery.png` remains the only
+screenshot path in the repository.

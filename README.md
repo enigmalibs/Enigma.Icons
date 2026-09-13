@@ -96,6 +96,20 @@ snippet. It is the visual check unit tests cannot give you.
 dotnet run --project samples/Enigma.Icons.Avalonia.Gallery
 ```
 
+## App icon studio
+
+A second desktop tool in this repository turns a Phosphor icon into an **application icon**: a rounded
+plate — solid or a two-stop gradient, any colours — with the glyph on top in a colour of your own, and
+a live preview at the sizes that actually matter. It writes a multi-frame `.ico` for
+`<ApplicationIcon>` and standalone `.png` files for an About dialog or a splash window.
+
+```bash
+dotnet run --project tools/Enigma.Icons.AppIconStudio
+```
+
+Like the gallery and the asset generator, it is a maintainer's tool: not packable, and referenced by
+nothing. See [`tools/Enigma.Icons.AppIconStudio/README.md`](tools/Enigma.Icons.AppIconStudio/README.md).
+
 ## Bring your own SVGs
 
 `SvgIconSet` turns a directory, a file list, an assembly's embedded resources, or in-memory SVG text
@@ -110,6 +124,8 @@ See [`src/Enigma.Icons/README.md`](src/Enigma.Icons/README.md) for the worked ex
   enum, `PhosphorIconSet`, and how to refresh the artwork.
 - [`Enigma.Icons.Avalonia`](src/Enigma.Icons.Avalonia/README.md) — the `Icon` control, the markup
   extensions, and the conversion extension methods.
+- [`Enigma.Icons.AppIconStudio`](tools/Enigma.Icons.AppIconStudio/README.md) — the app-icon studio:
+  what it writes, and how to wire the output into an app.
 - [`docs/SPEC.md`](docs/SPEC.md) — the full design specification behind all of it.
 
 ## Credits
