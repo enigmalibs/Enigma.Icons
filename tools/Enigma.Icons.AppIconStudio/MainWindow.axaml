@@ -9,23 +9,270 @@
         x:DataType="vm:MainWindowViewModel"
         Title="Enigma.Icons — App Icon Studio"
         Width="1180"
-        Height="800">
+        Height="800"
+        MinWidth="900"
+        MinHeight="620">
 
-  <!-- Placeholder shell (FEATURE-4E1F PHASE01). The catalog, the design controls, the live preview
-       and the output panel land in PHASE04 and PHASE05; this window exists so the project builds and
-       runs from the first phase. -->
-  <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
-    <ei:Icon Kind="PaintBrushBroad"
-             Weight="Duotone"
-             Size="64"
-             HorizontalAlignment="Center" />
-    <TextBlock Text="Enigma.Icons — App Icon Studio"
-               FontSize="20"
-               FontWeight="SemiBold"
-               HorizontalAlignment="Center" />
-    <TextBlock Text="{Binding StatusText}"
-               Opacity="0.7"
-               HorizontalAlignment="Center" />
-  </StackPanel>
+  <Window.Resources>
+    <!-- The checkerboard behind every preview. An app icon is transparent outside its rounded
+         corners, and against a flat panel that transparency is invisible — which is exactly the part
+         worth seeing before the file is written. Absolute DestinationRect + TileMode="Tile" is what
+         makes the 16 px cell repeat instead of stretching. -->
+    <DrawingBrush x:Key="CheckerboardBrush"
+                  TileMode="Tile"
+                  DestinationRect="0,0,16,16"
+                  Stretch="None">
+      <DrawingBrush.Drawing>
+        <DrawingGroup>
+          <GeometryDrawing Brush="#FFFFFFFF" Geometry="M0,0 H16 V16 H0 Z" />
+          <GeometryDrawing Brush="#FFE3E3E6" Geometry="M0,0 H8 V8 H0 Z M8,8 H16 V16 H8 Z" />
+        </DrawingGroup>
+      </DrawingBrush.Drawing>
+    </DrawingBrush>
+  </Window.Resources>
 
+  <Window.Styles>
+    <Style Selector="TextBlock.section">
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Opacity" Value="0.75" />
+      <Setter Property="Margin" Value="0,10,0,4" />
+    </Style>
+
+    <Style Selector="TextBlock.label">
+      <Setter Property="Opacity" Value="0.7" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="MinWidth" Value="96" />
+    </Style>
+
+    <Style Selector="TextBlock.caption">
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="Opacity" Value="0.65" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="TextBlock.value">
+      <Setter Property="Opacity" Value="0.7" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="MinWidth" Value="52" />
+    </Style>
+
+    <Style Selector="Border.pane">
+      <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Padding" Value="12" />
+    </Style>
+  </Window.Styles>
+
+  <Grid RowDefinitions="*,Auto" ColumnDefinitions="320,*">
+
+    <!-- ══ Left — the icon catalog ═══════════════════════════════════════════════════════════ -->
+    <Grid Grid.Row="0" Grid.Column="0" Margin="12,12,6,6" RowDefinitions="Auto,*">
+
+      <TextBox Grid.Row="0"
+               x:Name="SearchBox"
+               Margin="0,0,0,8"
+               PlaceholderText="Search 1,512 icons…"
+               Text="{Binding SearchText}" />
+
+      <Border Grid.Row="1" Classes="pane" Padding="2">
+        <Panel>
+          <!-- A flat virtualized list: 1,512 rows, only a screenful realized. Each row previews the
+               glyph in the CURRENTLY selected weight, bound up to the ViewModel, so changing the
+               weight repaints the realized rows through Icon's AffectsRender registration instead of
+               rebuilding the list (SPEC §10.2). -->
+          <ListBox ItemsSource="{Binding FilteredIcons}"
+                   SelectedItem="{Binding SelectedIcon}"
+                   IsVisible="{Binding HasResults}"
+                   Background="Transparent"
+                   BorderThickness="0">
+            <ListBox.ItemsPanel>
+              <ItemsPanelTemplate>
+                <VirtualizingStackPanel />
+              </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:IconEntry">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                  <ei:Icon Kind="{Binding Kind}"
+                           Size="20"
+                           VerticalAlignment="Center"
+                           Weight="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).SelectedWeight.Weight}" />
+                  <TextBlock Text="{Binding Name}"
+                             VerticalAlignment="Center"
+                             TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+
+          <TextBlock HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                     Opacity="0.7"
+                     IsVisible="{Binding !HasResults}"
+                     Text="{Binding EmptyMessage}" />
+        </Panel>
+      </Border>
+    </Grid>
+
+    <!-- ══ Right — preview and design controls ═══════════════════════════════════════════════ -->
+    <ScrollViewer Grid.Row="0"
+                  Grid.Column="1"
+                  Margin="6,12,12,6"
+                  HorizontalScrollBarVisibility="Disabled"
+                  VerticalScrollBarVisibility="Auto">
+      <StackPanel Spacing="10">
+
+        <!-- ── Preview ───────────────────────────────────────────────────────────────────── -->
+        <Border Classes="pane">
+          <StackPanel Orientation="Horizontal" Spacing="24">
+
+            <Border Width="256"
+                    Height="256"
+                    CornerRadius="4"
+                    Background="{StaticResource CheckerboardBrush}"
+                    BorderThickness="1"
+                    BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}">
+              <Image Source="{Binding PreviewImage}" Width="256" Height="256" />
+            </Border>
+
+            <StackPanel Spacing="8" VerticalAlignment="Top">
+              <TextBlock Classes="section" Text="At the sizes that matter" Margin="0,0,0,4" />
+
+              <!-- Rendered at their real pixel size and shown at it: a glyph scale that looks
+                   generous at 256 px is often a smudge at 16, and this strip is where that shows
+                   before the file is written. -->
+              <ItemsControl ItemsSource="{Binding Thumbnails}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" Spacing="14" />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:IconThumbnail">
+                    <StackPanel Spacing="4" VerticalAlignment="Bottom">
+                      <Border Background="{StaticResource CheckerboardBrush}"
+                              HorizontalAlignment="Center"
+                              BorderThickness="1"
+                              BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}">
+                        <Image Source="{Binding Image}"
+                               Width="{Binding SizePx}"
+                               Height="{Binding SizePx}" />
+                      </Border>
+                      <TextBlock Classes="caption" Text="{Binding SizePx, StringFormat='{}{0} px'}" />
+                    </StackPanel>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+
+          </StackPanel>
+        </Border>
+
+        <!-- ── Design controls ───────────────────────────────────────────────────────────── -->
+        <Border Classes="pane">
+          <StackPanel Spacing="8">
+
+            <TextBlock Classes="section" Text="Glyph" Margin="0,0,0,4" />
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Classes="label" Text="Weight" />
+              <ComboBox Width="150"
+                        ItemsSource="{Binding Weights}"
+                        SelectedItem="{Binding SelectedWeight}">
+                <ComboBox.ItemTemplate>
+                  <DataTemplate x:DataType="vm:WeightOption">
+                    <TextBlock Text="{Binding Name}" />
+                  </DataTemplate>
+                </ComboBox.ItemTemplate>
+              </ComboBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Classes="label" Text="Colour" />
+              <!-- A real picker, not a preset list: an icon on a pale plate needs a dark glyph, and a
+                   fixed palette would make half the plate colours unusable. -->
+              <ColorPicker Color="{Binding GlyphColor}" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Classes="label" Text="Size" />
+              <Slider Width="240"
+                      Minimum="0.2"
+                      Maximum="1.0"
+                      TickFrequency="0.01"
+                      IsSnapToTickEnabled="True"
+                      VerticalAlignment="Center"
+                      Value="{Binding GlyphScale}" />
+              <TextBlock Classes="value" Text="{Binding GlyphScale, StringFormat='{}{0:P0}'}" />
+            </StackPanel>
+
+            <TextBlock Classes="section" Text="Plate" />
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Classes="label" Text="Fill" />
+              <ComboBox Width="150"
+                        ItemsSource="{Binding FillModes}"
+                        SelectedItem="{Binding SelectedFillMode}">
+                <ComboBox.ItemTemplate>
+                  <DataTemplate x:DataType="vm:FillModeOption">
+                    <TextBlock Text="{Binding Name}" />
+                  </DataTemplate>
+                </ComboBox.ItemTemplate>
+              </ComboBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Classes="label" Text="Colour" />
+              <ColorPicker Color="{Binding PrimaryColor}" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="10" IsEnabled="{Binding IsGradient}">
+              <TextBlock Classes="label" Text="Second colour" />
+              <ColorPicker Color="{Binding SecondaryColor}" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="10" IsEnabled="{Binding IsGradient}">
+              <TextBlock Classes="label" Text="Angle" />
+              <!-- 0° runs left to right, 90° top to bottom; 45° is the corner-to-corner default. -->
+              <Slider Width="240"
+                      Minimum="0"
+                      Maximum="360"
+                      TickFrequency="1"
+                      IsSnapToTickEnabled="True"
+                      VerticalAlignment="Center"
+                      Value="{Binding GradientAngle}" />
+              <TextBlock Classes="value" Text="{Binding GradientAngle, StringFormat='{}{0:0}°'}" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBlock Classes="label" Text="Corners" />
+              <!-- 0 is a square, 0.5 a circle; 22 % is the radius of the reference plate. -->
+              <Slider Width="240"
+                      Minimum="0"
+                      Maximum="0.5"
+                      TickFrequency="0.01"
+                      IsSnapToTickEnabled="True"
+                      VerticalAlignment="Center"
+                      Value="{Binding CornerRadiusRatio}" />
+              <TextBlock Classes="value" Text="{Binding CornerRadiusRatio, StringFormat='{}{0:P0}'}" />
+            </StackPanel>
+
+          </StackPanel>
+        </Border>
+
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- ══ Status line ═══════════════════════════════════════════════════════════════════════ -->
+    <Border Grid.Row="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Padding="14,8"
+            BorderThickness="0,1,0,0"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+      <TextBlock Opacity="0.8" Text="{Binding StatusText}" TextTrimming="CharacterEllipsis" />
+    </Border>
+
+  </Grid>
 </Window>

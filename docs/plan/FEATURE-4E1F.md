@@ -392,7 +392,7 @@ Every phase must hold all of these, not only its own acceptance criteria:
 
 ## PHASE04 — Main window: catalog, design controls, live preview
 
-**Status:** TODO · Branch `feature/feature-4e1f-phase04-design-ui`
+**Status:** DONE · Branch `feature/feature-4e1f-phase04-design-ui`
 
 ### Steps
 
