@@ -19,10 +19,16 @@
     <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.1.0" />
     <PackageVersion Include="Avalonia.Headless" Version="12.1.0" />
     <PackageVersion Include="Avalonia.Headless.XUnit" Version="12.1.0" />
+    <!-- Part of the same coupled set: it ships lock-step with Avalonia and must carry the identical
+         version. Referenced by exactly one project — tools/Enigma.Icons.AppIconStudio, which is NOT
+         packable (FEATURE-4E1F) — so it never enters a .nupkg dependency graph and SPEC §2.10 is
+         untouched. It is not in the Fluent theme: a consumer must StyleInclude its own
+         Themes/Fluent/Fluent.xaml. -->
+    <PackageVersion Include="Avalonia.Controls.ColorPicker" Version="12.1.0" />
     <PackageVersion Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3" />
   </ItemGroup>
 
-  <!-- Gallery sample -->
+  <!-- Gallery sample and the app-icon studio tool -->
   <ItemGroup>
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.10" />

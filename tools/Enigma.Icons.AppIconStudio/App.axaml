@@ -1,0 +1,20 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Enigma.Icons.AppIconStudio.App"
+             RequestedThemeVariant="Default">
+
+  <!-- Default: the studio follows the OS light/dark preference.
+
+       There is deliberately NO StyleInclude for Enigma.Icons.Avalonia. Icon derives from Control,
+       not TemplatedControl, so that package ships no XAML and declares no theme resources
+       (SPEC §10.2).
+
+       Avalonia.Controls.ColorPicker is the opposite case: it carries its own control themes and the
+       Fluent theme package does not merge them, so without the second entry below every ColorPicker
+       renders as an untemplated blank. -->
+  <Application.Styles>
+    <FluentTheme />
+    <StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
+  </Application.Styles>
+
+</Application>

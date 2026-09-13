@@ -1,4 +1,4 @@
-**Status:** TODO · Multi-phase (6 phases) · Branches `feature/feature-4e1f-phaseNN-<slug>`
+**Status:** IN PROGRESS · Multi-phase (6 phases) · Branches `feature/feature-4e1f-phaseNN-<slug>`
 **Run:** feature/2026-09-13-app-icon-studio
 
 # FEATURE-4E1F — App icon studio (.ico + .png generator)
@@ -277,7 +277,7 @@ Every phase must hold all of these, not only its own acceptance criteria:
 
 ## PHASE01 — Project scaffolding & design model
 
-**Status:** TODO · Branch `feature/feature-4e1f-phase01-scaffolding`
+**Status:** DONE · Branch `feature/feature-4e1f-phase01-scaffolding`
 
 ### Steps
 
