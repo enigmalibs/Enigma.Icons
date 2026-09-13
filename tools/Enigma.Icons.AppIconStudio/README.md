@@ -30,6 +30,14 @@ its window.
 The glyph colour is a free choice on purpose: an icon on a pale plate needs a dark glyph, and forcing
 white would make half the plate colours unusable.
 
+**Reset**, at the top right of the design pane, puts every row of the table above back to its
+*Default* — and, in the output panel below, the base name and the ticked sizes too. It also clears
+the search box, so the restored icon is visible and highlighted again.
+
+The one thing it keeps is the **output folder**. That is a session destination rather than a design
+value: clearing it would grey out *Generate* and send you back through the folder dialog, which is an
+undo that costs more than it saves.
+
 The **preview is the export** — it comes out of the same renderer, at the size it will be written. The
 64/48/32/16 strip beside it is where a too-generous glyph size stops being legible, which is worth
 knowing before the file is written rather than after.
