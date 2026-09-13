@@ -22,5 +22,14 @@ public partial class MainWindow : Window
 
         InitializeComponent();
         DataContext = viewModel;
+
+        // Focusing in the constructor is too early — the window has no visual root yet.
+        Opened += OnOpened;
+    }
+
+    private void OnOpened(object? sender, EventArgs e)
+    {
+        Opened -= OnOpened;
+        SearchBox.Focus();
     }
 }
