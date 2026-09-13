@@ -31,10 +31,12 @@ Row order is the intended build order — `/build` surfaces the topmost `TODO` f
 | - PHASE04        | Main window: catalog, controls, preview                                         | DONE   | (in FEATURE-4E1F.md)          |
 | - PHASE05        | Output panel & Generate command                                                 | DONE   | (in FEATURE-4E1F.md)          |
 | - PHASE06        | Documentation (SPEC §18, READMEs, CLAUDE.md)                                    | DONE   | (in FEATURE-4E1F.md)          |
+| FEATURE-0DD4     | Reset button in the app icon studio                                             | TODO   | docs/plan/FEATURE-0DD4.md     |
 
-`FEATURE-21C4` … `FEATURE-1608` are single-phase `FEATURE`s — no phase rows. `CODE-REVIEW-1FD4` is
-multi-phase: one phase per accepted review finding, ordered highest-severity first. `FEATURE-4E1F`
-is multi-phase in build order: model, rendering, export, UI, then documentation.
+`FEATURE-21C4` … `FEATURE-1608` and `FEATURE-0DD4` are single-phase `FEATURE`s — no phase rows.
+`CODE-REVIEW-1FD4` is multi-phase: one phase per accepted review finding, ordered highest-severity
+first. `FEATURE-4E1F` is multi-phase in build order: model, rendering, export, UI, then
+documentation.
 
 > **`CODE-REVIEW-1FD4` and `FEATURE-1608` are post-1.0 items, planned 2026-07-27.** They come after
 > the deferred `FEATURE-6FA1` in row order but are **buildable now** — 6FA1 is the one row `/build`
@@ -54,6 +56,11 @@ is multi-phase in build order: model, rendering, export, UI, then documentation.
 > no package version, `RELEASENOTES.md` entry or `PackageReleaseNotes` moves. It is the post-1.0
 > slnx growth SPEC §3.4 already anticipates, taking the solution from eight `<Project>` entries to
 > ten.
+
+> **`FEATURE-0DD4` is a post-1.0 follow-up to `FEATURE-4E1F`, planned 2026-09-13.** It touches only
+> `tools/Enigma.Icons.AppIconStudio` and its test project — no new project, no new package pin,
+> **nothing under `src/`**, and no package version, `RELEASENOTES.md` entry or `PackageReleaseNotes`
+> moves.
 
 ## Sequencing & dependencies
 
@@ -84,6 +91,9 @@ is multi-phase in build order: model, rendering, export, UI, then documentation.
     the Phosphor catalog it composes from, and consumes them exactly as an external consumer would.
     Independent of 1608 and 6FA1; its phases build strictly in order, since each layer (model →
     rasterizer → export → UI) is what the next one binds to.
+11. **FEATURE-0DD4** — the studio's Reset button. Depends on 4E1F being complete: it hoists that
+    item's scattered startup defaults into one type and adds the command that re-applies them.
+    Touches no other project.
 
 Branches are cut from `HEAD` at `/build` time as `feature/<id-lowercased>-<slug>` (each plan's
 header carries the exact name), except FEATURE-21C4 (see 1 above).
