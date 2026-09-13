@@ -45,16 +45,19 @@ The generator's exit codes are the failure surface — never treat non-zero as "
 The test runner is Microsoft.Testing.Platform, selected by `global.json` (SPEC §3.1) — there is no
 `Microsoft.NET.Test.Sdk` or VSTest in this solution.
 
-> As of FEATURE-469B the slnx holds **all eight** end-state projects (SPEC §3.4) — every path above
-> exists. `dotnet pack` applies to the three packable ones: `Enigma.Icons`, `Enigma.Icons.Phosphor`
-> and `Enigma.Icons.Avalonia`. FEATURE-718F has since written the four READMEs to their shipped
+> As of FEATURE-469B the slnx held **all eight** 1.0.0 end-state projects (SPEC §3.4) — every path
+> above exists. `FEATURE-4E1F` has since appended the two **non-packable** app-icon-studio projects
+> (`tools/Enigma.Icons.AppIconStudio` and its `.UnitTests`), so the file now holds **ten**.
+> `dotnet pack` still applies to the same three packable ones: `Enigma.Icons`,
+> `Enigma.Icons.Phosphor` and `Enigma.Icons.Avalonia`. FEATURE-718F has since written the four READMEs to their shipped
 > state, and **FEATURE-74DC has completed 1.0.0 release preparation** — all three packages carry
 > `<Version>1.0.0</Version>` and `<PackageReleaseNotes>`, `RELEASENOTES.md` is filled, and the
 > pack/tag/push runbook lives in **`docs/RELEASE.md`**. The 1.0.0 line is therefore feature-complete.
-> Two post-1.0 items were planned on 2026-07-27; neither bumps a version — 1.0.0 was never
-> published, so they fold into it. **`CODE-REVIEW-1FD4` (review fixes) is `DONE`** — all four phases
-> landed, and its completion docs record the two findings deliberately left as-is, so do not
-> re-raise them. `FEATURE-1608` (`docs/internals.html`) is the one remaining buildable item.
+> **No post-1.0 item bumps a version** — 1.0.0 was never published, so they all fold into it.
+> **`CODE-REVIEW-1FD4` (review fixes) is `DONE`** — all four phases landed, and its completion docs
+> record the two findings deliberately left as-is, so do not re-raise them. **`FEATURE-4E1F` (the
+> app-icon studio, SPEC §18) is `DONE`** — six phases, two new non-packable projects, nothing under
+> `src/` touched. `FEATURE-1608` (`docs/internals.html`) is the one remaining buildable item.
 > FEATURE-6FA1 (the WPF sibling) is the one roadmap row `/build` must **skip**: it is **deferred
 > post-1.0 and must not be built**.
 
@@ -64,13 +67,15 @@ follow*, not to execute: the merge to `main`, `git tag`, the publish `dotnet pac
 never store, commit, or echo it. Note the repo currently has **no `git remote`**, so the publish path
 cannot run until one is added.
 
-Run the gallery — the sample app, and the only way to verify rendering by eye:
+Run the two desktop apps — the gallery is how rendering is verified by eye, the studio is how an
+application icon gets made:
 
 ```bash
 dotnet run --project samples/Enigma.Icons.Avalonia.Gallery
+dotnet run --project tools/Enigma.Icons.AppIconStudio
 ```
 
-It needs a real desktop session (`DISPLAY`/`WAYLAND_DISPLAY`); a headless shell cannot show its window.
+Both need a real desktop session (`DISPLAY`/`WAYLAND_DISPLAY`); a headless shell cannot show a window.
 
 ## Architecture
 
@@ -84,10 +89,15 @@ Enigma.Icons.Avalonia     Geometry/Drawing conversion, markup extensions, the Ic
 
 - `tools/Enigma.Icons.Generator` — non-packable console app; writes the committed `.dat` resources
   and the generated `PhosphorIcon` enum into `src/Enigma.Icons.Phosphor/`.
+- `tools/Enigma.Icons.AppIconStudio` — non-packable Avalonia desktop app (SPEC §18, `FEATURE-4E1F`);
+  composes a rounded plate plus a Phosphor glyph and writes a multi-frame `.ico` and standalone
+  `.png` assets. It consumes the three packages through their public API, exactly as an external
+  consumer would. It is the one project that references `Avalonia.Controls.ColorPicker`.
 - `samples/Enigma.Icons.Avalonia.Gallery` — non-packable Avalonia desktop app; the visual
   verification unit tests cannot provide.
 
-Neither is packable, and neither is referenced by any packable project.
+**None of the three is packable, and none is referenced by any packable project** — `dotnet pack`
+still applies to exactly `Enigma.Icons`, `Enigma.Icons.Phosphor` and `Enigma.Icons.Avalonia`.
 
 ## Hard rules (SPEC §2)
 

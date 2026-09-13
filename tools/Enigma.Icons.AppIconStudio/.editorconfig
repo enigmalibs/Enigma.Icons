@@ -1,0 +1,15 @@
+# Scoped to the app-icon studio tool — inherits everything from the solution-root .editorconfig
+# (root = false by default), which stays byte-identical to docs/reference/config/editorconfig.
+
+[*.axaml]
+# AVLN3001 — "won't be reachable via runtime loader, as no public constructor was found".
+#
+# MainWindow takes its ViewModel by constructor injection and is resolved from the host
+# (SPEC §11), so it deliberately has no parameterless constructor. Nothing loads this window
+# through AvaloniaXamlLoader by URI: the XAML is compiled, and App resolves the window from the
+# container. The accepted consequence is that the XAML previewer cannot instantiate MainWindow —
+# adding a second constructor that news up a ViewModel just to please the designer is exactly
+# what the plan forbids. Suppressed here rather than solution-wide, for the same reason the
+# gallery sample carries its own copy: it must keep firing for any future window that really is
+# loaded at runtime.
+avalonia_xaml_diagnostic.AVLN3001.severity = none
