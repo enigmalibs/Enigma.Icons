@@ -1,0 +1,31 @@
+<!-- ONE icons namespace declaration reaches the control and both markup extensions: the two
+     XmlnsDefinition attributes in Enigma.Icons.Avalonia map Enigma.Icons.Avalonia and
+     Enigma.Icons.Avalonia.Markup onto this single URI (SPEC §10.3). -->
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ei="https://github.com/josueclement/Enigma.Icons"
+        xmlns:vm="using:Enigma.Icons.AppIconStudio"
+        x:Class="Enigma.Icons.AppIconStudio.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Enigma.Icons — App Icon Studio"
+        Width="1180"
+        Height="800">
+
+  <!-- Placeholder shell (FEATURE-4E1F PHASE01). The catalog, the design controls, the live preview
+       and the output panel land in PHASE04 and PHASE05; this window exists so the project builds and
+       runs from the first phase. -->
+  <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
+    <ei:Icon Kind="PaintBrushBroad"
+             Weight="Duotone"
+             Size="64"
+             HorizontalAlignment="Center" />
+    <TextBlock Text="Enigma.Icons — App Icon Studio"
+               FontSize="20"
+               FontWeight="SemiBold"
+               HorizontalAlignment="Center" />
+    <TextBlock Text="{Binding StatusText}"
+               Opacity="0.7"
+               HorizontalAlignment="Center" />
+  </StackPanel>
+
+</Window>

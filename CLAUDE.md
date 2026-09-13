@@ -45,9 +45,11 @@ The generator's exit codes are the failure surface — never treat non-zero as "
 The test runner is Microsoft.Testing.Platform, selected by `global.json` (SPEC §3.1) — there is no
 `Microsoft.NET.Test.Sdk` or VSTest in this solution.
 
-> As of FEATURE-469B the slnx holds **all eight** end-state projects (SPEC §3.4) — every path above
-> exists. `dotnet pack` applies to the three packable ones: `Enigma.Icons`, `Enigma.Icons.Phosphor`
-> and `Enigma.Icons.Avalonia`. FEATURE-718F has since written the four READMEs to their shipped
+> As of FEATURE-469B the slnx held **all eight** 1.0.0 end-state projects (SPEC §3.4) — every path
+> above exists. `FEATURE-4E1F` has since appended the two **non-packable** app-icon-studio projects
+> (`tools/Enigma.Icons.AppIconStudio` and its `.UnitTests`), so the file now holds **ten**.
+> `dotnet pack` still applies to the same three packable ones: `Enigma.Icons`,
+> `Enigma.Icons.Phosphor` and `Enigma.Icons.Avalonia`. FEATURE-718F has since written the four READMEs to their shipped
 > state, and **FEATURE-74DC has completed 1.0.0 release preparation** — all three packages carry
 > `<Version>1.0.0</Version>` and `<PackageReleaseNotes>`, `RELEASENOTES.md` is filled, and the
 > pack/tag/push runbook lives in **`docs/RELEASE.md`**. The 1.0.0 line is therefore feature-complete.

@@ -289,8 +289,9 @@ Do not add any property not listed. In particular `ImplicitUsings` is set **per 
 </Solution>
 ```
 
-The end state has **eight** `<Project>` entries — 3 `src` + 3 `tests` + 1 `samples` + 1 `tools`.
-Use that number; do not recount.
+The 1.0.0 end state has **eight** `<Project>` entries — 3 `src` + 3 `tests` + 1 `samples` +
+1 `tools`. Use that number; do not recount. Post-1.0, `FEATURE-4E1F` appended two more (see the
+table below), so the committed file now holds **ten**.
 
 **Incremental-growth contract.** The slnx must never reference a project that does not exist yet,
 so it must stay buildable at every step. Each work item appends only its own entries:
@@ -304,10 +305,12 @@ so it must stay buildable at every step. Each work item appends only its own ent
 | FEATURE-3ADD | `src/Enigma.Icons.Avalonia`, `tests/Enigma.Icons.Avalonia.UnitTests` |
 | FEATURE-469B | `samples/Enigma.Icons.Avalonia.Gallery` → reaches the §3.4 end state (8 entries) |
 | FEATURE-718F, FEATURE-74DC | nothing |
+| FEATURE-4E1F (post-1.0) | `tools/Enigma.Icons.AppIconStudio`, `tests/Enigma.Icons.AppIconStudio.UnitTests` → 10 entries |
 
-The eight-entry end state is final **for the 1.0.0 line**. The deferred `FEATURE-6FA1` (WPF) would
-extend the table post-1.0 with `src/Enigma.Icons.Wpf` and `tests/Enigma.Icons.Wpf.UnitTests`; that is
-expected and is not a contradiction of "end state".
+The eight-entry end state is final **for the 1.0.0 line**. Post-1.0 growth is expected and is not a
+contradiction of "end state": `FEATURE-4E1F` has already added the two non-packable app-icon-studio
+entries above, and the deferred `FEATURE-6FA1` (WPF) would add `src/Enigma.Icons.Wpf` and
+`tests/Enigma.Icons.Wpf.UnitTests`.
 
 ### 3.5 `.gitignore` / `.editorconfig`
 
